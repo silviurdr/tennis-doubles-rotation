@@ -696,7 +696,8 @@
 
             .stats-table th,
             .stats-table td {
-                padding: 8px 4px;
+                padding: 6px 3px;
+                font-size: 0.85em;
             }
 
             /* Make table scrollable on mobile */
@@ -757,7 +758,7 @@
             .stats-table thead th:nth-child(2),
             .stats-table tbody td:nth-child(2) {
                 position: sticky;
-                left: 50px;
+                left: 40px;
                 z-index: 2;
                 box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             }
@@ -773,18 +774,20 @@
             /* Ensure proper minimum widths for columns */
             .stats-table th:first-child,
             .stats-table td:first-child {
-                min-width: 50px;
-                width: 50px;
+                min-width: 40px;
+                width: 40px;
             }
             
             .stats-table th:nth-child(2),
             .stats-table td:nth-child(2) {
-                min-width: 100px;
+                min-width: 70px;
+                max-width: 85px;
             }
             
             .stats-table th:nth-child(3),
             .stats-table td:nth-child(3) {
-                min-width: 150px;
+                min-width: 100px;
+                max-width: 110px;
             }
         }
 
@@ -1962,9 +1965,9 @@
                     if (player.weightedScore === 0) {
                         // Empty chair for players with no benches
                         benchVisual = `
-                            <div style="text-align: center;">
-                                <div style="font-size: 2em; opacity: 0.2;">🪑</div>
-                                <div style="font-size: 0.75em; color: #999; margin-top: 5px;">0% (0 pts)</div>
+                            <div style="text-align: center; padding: 2px;">
+                                <div style="font-size: 1.5em; opacity: 0.2;">🪑</div>
+                                <div style="font-size: 0.65em; color: #999; margin-top: 2px;">0%</div>
                             </div>`;
                     } else {
                         // Calculate percentage for display
@@ -1975,16 +1978,16 @@
                         const chairOpacity = 0.3 + (proportion * 0.7); // Range from 0.3 to 1.0
                         
                         benchVisual = `
-                            <div style="text-align: center;">
-                                <div style="font-size: 2em; opacity: ${chairOpacity}; color: #667eea;">🪑</div>
-                                <div style="width: 60px; height: 8px; background: #e0e0e0; border-radius: 4px; margin: 5px auto; overflow: hidden;">
-                                    <div style="width: ${fillPercent}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 4px; transition: width 0.3s;"></div>
+                            <div style="text-align: center; padding: 2px;">
+                                <div style="font-size: 1.5em; opacity: ${chairOpacity}; color: #667eea; line-height: 1;">🪑</div>
+                                <div style="width: 45px; height: 6px; background: #e0e0e0; border-radius: 3px; margin: 3px auto 2px; overflow: hidden;">
+                                    <div style="width: ${fillPercent}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px;"></div>
                                 </div>
-                                <div style="font-size: 0.75em; color: #667eea; font-weight: bold;">
+                                <div style="font-size: 0.7em; color: #667eea; font-weight: bold; line-height: 1;">
                                     ${fillPercent}%
                                 </div>
-                                <div style="font-size: 0.7em; color: #999;">
-                                    (${weightedScoreDisplay} pts)
+                                <div style="font-size: 0.6em; color: #999; line-height: 1;">
+                                    ${weightedScoreDisplay}p
                                 </div>
                             </div>
                         `;
