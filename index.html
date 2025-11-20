@@ -377,6 +377,12 @@
             border: 1px solid #ffeeba;
         }
 
+        .stats-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+        }
+
         .stats-table {
             width: 100%;
             border-collapse: collapse;
@@ -609,21 +615,169 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             .header h1 {
-                font-size: 1.8em;
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
             }
 
             .nav-tab {
-                font-size: 0.9em;
-                padding: 12px;
+                font-size: 0.75em;
+                padding: 10px 5px;
             }
 
             .tab-content {
                 padding: 15px;
             }
 
+            .section-title {
+                font-size: 1.2em;
+            }
+
+            .player-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .player-input label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.9em;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .sets-container {
+                gap: 15px;
+            }
+
+            .set-card {
+                padding: 15px;
+            }
+
+            .bench-options {
+                flex-direction: column;
+            }
+
+            .bench-option {
+                width: 100%;
+                text-align: left;
+            }
+
             .winner-options {
                 flex-direction: column;
+            }
+
+            .winner-option {
+                width: 100%;
+            }
+
+            .teams-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .team-box {
+                padding: 10px;
+            }
+
+            .stats-table {
+                font-size: 0.85em;
+            }
+
+            .stats-table th,
+            .stats-table td {
+                padding: 8px 4px;
+            }
+
+            /* Make table scrollable on mobile */
+            .stats-table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .week-card {
+                padding: 15px;
+            }
+
+            .export-import-section {
+                flex-direction: column;
+            }
+
+            .export-import-section .btn {
+                width: 100%;
+            }
+
+            /* Improve touch targets */
+            .player-draggable {
+                padding: 12px 20px;
+                margin: 8px 5px;
+                font-size: 1em;
+            }
+
+            .bench-option {
+                padding: 15px;
+                font-size: 1em;
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .rank-badge {
+                font-size: 0.8em;
+            }
+
+            /* Better mobile tables */
+            .stats-table thead th:first-child,
+            .stats-table tbody td:first-child {
+                position: sticky;
+                left: 0;
+                background: white;
+                z-index: 1;
+            }
+
+            .stats-table thead th:nth-child(2),
+            .stats-table tbody td:nth-child(2) {
+                position: sticky;
+                left: 50px;
+                background: white;
+                z-index: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.3em;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-tab {
+                font-size: 0.7em;
+                padding: 10px 8px;
+                white-space: nowrap;
+            }
+
+            .stats-table {
+                font-size: 0.75em;
+            }
+
+            .bench-visual-cell {
+                font-size: 0.8em;
             }
         }
     </style>
@@ -1598,45 +1752,69 @@
                     return a.name.localeCompare(b.name);
                 });
 
-                let html = `<table class="stats-table">
+                // Calculate max total benches for proportional display
+                const maxTotalBenches = sortedPlayers.length > 0 ? sortedPlayers[0].totalBenches : 0;
+
+                let html = `<div class="stats-table-wrapper"><table class="stats-table">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th style="width: 50px;">#</th>
                             <th>Player</th>
-                            <th>Set 1 Benches</th>
-                            <th>Set 2 Benches</th>
-                            <th>Set 3 Benches</th>
-                            <th>Total Benches</th>
+                            <th style="width: 150px;">Bench Visual</th>
+                            <th>Set 1</th>
+                            <th>Set 2</th>
+                            <th>Set 3</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>`;
 
                 sortedPlayers.forEach((player, index) => {
-                    // Add rank with medals for top 3 (most benched)
-                    let rankDisplay;
-                    if (index === 0) rankDisplay = '🥇';
-                    else if (index === 1) rankDisplay = '🥈';
-                    else if (index === 2) rankDisplay = '🥉';
-                    else rankDisplay = index + 1;
+                    const rank = index + 1;
+                    
+                    // Calculate proportion of benches (0 to 1)
+                    const proportion = maxTotalBenches > 0 ? player.totalBenches / maxTotalBenches : 0;
+                    
+                    // Generate bench icons - show up to 5 benches proportionally filled
+                    const totalBenchIcons = 5;
+                    const filledBenches = Math.round(proportion * totalBenchIcons);
+                    const emptyBenches = totalBenchIcons - filledBenches;
+                    
+                    let benchVisual = '';
+                    // Add filled benches (🪑 or 💺)
+                    for (let i = 0; i < filledBenches; i++) {
+                        benchVisual += '<span style="font-size: 1.3em; color: #667eea;">🪑</span>';
+                    }
+                    // Add empty benches (⬜ or lighter icon)
+                    for (let i = 0; i < emptyBenches; i++) {
+                        benchVisual += '<span style="font-size: 1.3em; opacity: 0.2;">🪑</span>';
+                    }
+                    
+                    // If no benches at all, show empty
+                    if (player.totalBenches === 0) {
+                        benchVisual = '<span style="opacity: 0.3; font-size: 0.9em;">No benches</span>';
+                    }
 
                     html += `<tr>
-                        <td style="text-align: center; font-size: 1.2em;"><strong>${rankDisplay}</strong></td>
+                        <td style="text-align: center; font-weight: bold; color: #667eea;">${rank}</td>
                         <td><strong>${player.name}</strong></td>
-                        <td>${player.set1Benches}</td>
-                        <td>${player.set2Benches}</td>
-                        <td>${player.set3Benches}</td>
-                        <td><strong>${player.totalBenches}</strong></td>
+                        <td style="text-align: center; white-space: nowrap;">${benchVisual}</td>
+                        <td style="text-align: center;">${player.set1Benches}</td>
+                        <td style="text-align: center;">${player.set2Benches}</td>
+                        <td style="text-align: center;">${player.set3Benches}</td>
+                        <td style="text-align: center;"><strong>${player.totalBenches}</strong></td>
                     </tr>`;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; color: #666;">
-                    <strong>Ranking Priority:</strong> Players are ranked by most benches in this order:<br>
-                    1️⃣ Set 1 benches (most important)<br>
-                    2️⃣ Set 2 benches<br>
-                    3️⃣ Set 3 benches<br>
-                    4️⃣ Total benches<br>
-                    <em>🥇 = Most benched player</em>
+                    <strong>Understanding the Bench Visual:</strong><br>
+                    🪑 <strong>Filled benches</strong> = Proportional to total bench time<br>
+                    <span style="opacity: 0.3;">🪑</span> <strong>Empty benches</strong> = Remaining capacity<br>
+                    The player with the most total benches gets 5 filled benches (100%)<br>
+                    <br>
+                    <strong>Ranking Priority:</strong> Players ranked by most benches in this order:<br>
+                    1️⃣ Set 1 benches (most important) → 2️⃣ Set 2 → 3️⃣ Set 3 → 4️⃣ Total benches
                 </div>`;
                 
                 document.getElementById('statsContainer').innerHTML = html;
