@@ -2661,6 +2661,9 @@
                 await displayCurrentWeek();
                 console.log('Current week displayed');
                 
+                await displayStats();
+                console.log('Statistics displayed');
+                
                 // Remove loading message
                 const loadingMsg = document.getElementById('loadingMessage');
                 if (loadingMsg) {
