@@ -1923,22 +1923,36 @@
                     // Calculate proportion of weighted score (0 to 1)
                     const proportion = maxWeightedScore > 0 ? player.weightedScore / maxWeightedScore : 0;
                     
-                    // Create a single chair with proportional fill using CSS
+                    // Create a visual representation with chair and progress bar
                     let benchVisual = '';
                     
                     if (player.weightedScore === 0) {
                         // Empty chair for players with no benches
-                        benchVisual = '<div style="position: relative; display: inline-block; font-size: 2.5em; opacity: 0.2;">🪑</div>';
+                        benchVisual = `
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; opacity: 0.2;">🪑</div>
+                                <div style="font-size: 0.75em; color: #999; margin-top: 5px;">0% (0 pts)</div>
+                            </div>`;
                     } else {
-                        // Calculate percentage for CSS clip
+                        // Calculate percentage for display
                         const fillPercent = Math.round(proportion * 100);
+                        const weightedScoreDisplay = player.weightedScore.toFixed(1);
+                        
+                        // Chair opacity based on fill percentage
+                        const chairOpacity = 0.3 + (proportion * 0.7); // Range from 0.3 to 1.0
                         
                         benchVisual = `
-                            <div style="position: relative; display: inline-block; font-size: 2.5em; width: 1.2em; height: 1.2em;">
-                                <!-- Background (empty/faded chair) -->
-                                <div style="position: absolute; top: 0; left: 0; opacity: 0.2; color: #667eea;">🪑</div>
-                                <!-- Foreground (filled chair) - clipped from bottom to show fill from top -->
-                                <div style="position: absolute; top: 0; left: 0; color: #667eea; clip-path: inset(${100 - fillPercent}% 0 0 0);">🪑</div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2em; opacity: ${chairOpacity}; color: #667eea;">🪑</div>
+                                <div style="width: 60px; height: 8px; background: #e0e0e0; border-radius: 4px; margin: 5px auto; overflow: hidden;">
+                                    <div style="width: ${fillPercent}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 4px; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 0.75em; color: #667eea; font-weight: bold;">
+                                    ${fillPercent}%
+                                </div>
+                                <div style="font-size: 0.7em; color: #999;">
+                                    (${weightedScoreDisplay} pts)
+                                </div>
                             </div>
                         `;
                     }
@@ -1957,15 +1971,17 @@
                 html += `</tbody></table></div>`;
                 html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; color: #666;">
                     <strong>Understanding the Bench Visual:</strong><br>
-                    🪑 <strong>Filled from top to bottom</strong> = Shows weighted bench score<br>
-                    <span style="opacity: 0.3;">🪑</span> <strong>Faded part</strong> = Unfilled portion<br>
-                    The player ranked #1 (highest weighted score) has a completely filled chair (100%)<br>
-                    Other players have proportionally filled chairs based on their weighted score<br>
+                    🪑 <strong>Chair opacity</strong> = Darker/fuller chairs indicate higher weighted scores<br>
+                    <strong>Progress bar</strong> = Shows exact percentage relative to the top bencher<br>
+                    <strong>Percentage</strong> = Weighted score as % of the highest scorer (100%)<br>
+                    <strong>Points</strong> = Actual weighted bench score<br>
                     <br>
                     <strong>Weighted Scoring System:</strong><br>
                     Set 1 benches: <strong>1.0 point</strong> each (most important)<br>
                     Set 2 benches: <strong>0.8 points</strong> each<br>
                     Set 3 benches: <strong>0.6 points</strong> each<br>
+                    <br>
+                    <strong>Example:</strong> Razvan (1.0 pts, 100%) vs Marius (0.8 pts, 80%) - The 20% difference is clearly visible in the progress bar!<br>
                     <br>
                     <strong>Ranking Priority:</strong> Players ranked by highest weighted score first
                 </div>`;
