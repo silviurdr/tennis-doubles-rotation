@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
-    <title>Tennis Rotation Manager</title>
+    <title>Tennis Rotation Manager - Cloud Sync</title>
     <style>
         * {
             margin: 0;
@@ -957,6 +956,129 @@
     </div>
 
     <script>
+        // ==============================================
+        // SUPABASE CONFIGURATION
+        // ==============================================
+        // TODO: Replace these with your actual Supabase credentials
+        // Get them from: https://supabase.com → Your Project → Settings → API
+        
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; // e.g., 'https://xxxxx.supabase.co'
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE'; // Your anon/public key
+        
+        // Set this to true once you've added your Supabase credentials above
+        const SUPABASE_ENABLED = false;
+        
+        // ==============================================
+        // SUPABASE CLIENT (Simple fetch-based)
+        // ==============================================
+        
+        class SupabaseClient {
+            constructor(url, key) {
+                this.url = url;
+                this.key = key;
+            }
+            
+            async query(table, method = 'GET', body = null, id = null) {
+                const endpoint = id 
+                    ? `${this.url}/rest/v1/${table}?id=eq.${id}`
+                    : `${this.url}/rest/v1/${table}`;
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'apikey': this.key,
+                        'Authorization': `Bearer ${this.key}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    }
+                };
+                
+                if (body && (method === 'POST' || method === 'PATCH')) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(endpoint, options);
+                if (!response.ok) {
+                    throw new Error(`Supabase error: ${response.statusText}`);
+                }
+                return response.json();
+            }
+            
+            async getByType(type) {
+                const endpoint = `${this.url}/rest/v1/tennis_data?data_type=eq.${type}`;
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'apikey': this.key,
+                        'Authorization': `Bearer ${this.key}`
+                    }
+                });
+                const data = await response.json();
+                return data.length > 0 ? data[0].content : null;
+            }
+            
+            async upsertByType(type, content) {
+                // First, try to get existing
+                const existing = await this.getByType(type);
+                
+                if (existing) {
+                    // Update existing
+                    const endpoint = `${this.url}/rest/v1/tennis_data?data_type=eq.${type}`;
+                    await fetch(endpoint, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': this.key,
+                            'Authorization': `Bearer ${this.key}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify({
+                            content: content,
+                            updated_at: new Date().toISOString()
+                        })
+                    });
+                } else {
+                    // Insert new
+                    const endpoint = `${this.url}/rest/v1/tennis_data`;
+                    await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': this.key,
+                            'Authorization': `Bearer ${this.key}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify({
+                            data_type: type,
+                            content: content,
+                            updated_at: new Date().toISOString()
+                        })
+                    });
+                }
+            }
+            
+            async getAllWeeks() {
+                const weeks = await this.getByType('weeks');
+                return weeks || [];
+            }
+            
+            async saveWeeks(weeksArray) {
+                await this.upsertByType('weeks', weeksArray);
+            }
+        }
+        
+        // Initialize Supabase client (will show error if not configured)
+        let supabase = null;
+        if (SUPABASE_ENABLED) {
+            if (SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' || SUPABASE_KEY === 'YOUR_SUPABASE_ANON_KEY_HERE') {
+                console.error('⚠️ Supabase credentials not configured! Please update SUPABASE_URL and SUPABASE_KEY in the code.');
+            } else {
+                supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase client initialized');
+            }
+        } else {
+            console.log('ℹ️ Supabase disabled - using local IndexedDB storage');
+        }
+
         // Global error handler to prevent console spam
         window.addEventListener('error', function(e) {
             // Silently log errors without showing to user
@@ -1039,16 +1161,23 @@
             });
         }
 
-        // Database operations
+        // Database operations - Unified interface for both Supabase and IndexedDB
         async function saveToStore(storeName, data) {
             try {
-                const tx = db.transaction(storeName, 'readwrite');
-                const store = tx.objectStore(storeName);
-                await store.put(data);
-                return await new Promise((resolve, reject) => {
-                    tx.oncomplete = () => resolve(true);
-                    tx.onerror = () => reject(tx.error);
-                });
+                if (SUPABASE_ENABLED && supabase) {
+                    // Save to Supabase
+                    await supabase.upsertByType(storeName, data);
+                    console.log(`✅ Saved to Supabase: ${storeName}`);
+                } else {
+                    // Save to IndexedDB (fallback)
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    await store.put(data);
+                    return await new Promise((resolve, reject) => {
+                        tx.oncomplete = () => resolve(true);
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
             } catch (error) {
                 console.error('Error saving to store:', storeName, error);
                 throw error;
@@ -1057,13 +1186,19 @@
 
         async function getFromStore(storeName, key) {
             try {
-                const tx = db.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);
-                return new Promise((resolve, reject) => {
-                    const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
+                if (SUPABASE_ENABLED && supabase) {
+                    // Get from Supabase
+                    return await supabase.getByType(storeName);
+                } else {
+                    // Get from IndexedDB (fallback)
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    return new Promise((resolve, reject) => {
+                        const request = store.get(key);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                }
             } catch (error) {
                 console.error('Error getting from store:', storeName, key, error);
                 return null;
@@ -1072,13 +1207,22 @@
 
         async function getAllFromStore(storeName) {
             try {
-                const tx = db.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);
-                return new Promise((resolve, reject) => {
-                    const request = store.getAll();
-                    request.onsuccess = () => resolve(request.result || []);
-                    request.onerror = () => reject(request.error);
-                });
+                if (SUPABASE_ENABLED && supabase) {
+                    // Get from Supabase
+                    if (storeName === 'weeks') {
+                        return await supabase.getAllWeeks();
+                    }
+                    return [];
+                } else {
+                    // Get from IndexedDB (fallback)
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    return new Promise((resolve, reject) => {
+                        const request = store.getAll();
+                        request.onsuccess = () => resolve(request.result || []);
+                        request.onerror = () => reject(request.error);
+                    });
+                }
             } catch (error) {
                 console.error('Error getting all from store:', storeName, error);
                 return [];
@@ -1087,13 +1231,19 @@
 
         async function clearStore(storeName) {
             try {
-                const tx = db.transaction(storeName, 'readwrite');
-                const store = tx.objectStore(storeName);
-                await store.clear();
-                return await new Promise((resolve, reject) => {
-                    tx.oncomplete = () => resolve(true);
-                    tx.onerror = () => reject(tx.error);
-                });
+                if (SUPABASE_ENABLED && supabase) {
+                    // Clear in Supabase
+                    await supabase.upsertByType(storeName, null);
+                } else {
+                    // Clear in IndexedDB (fallback)
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    await store.clear();
+                    return await new Promise((resolve, reject) => {
+                        tx.oncomplete = () => resolve(true);
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
             } catch (error) {
                 console.error('Error clearing store:', storeName, error);
                 throw error;
@@ -1729,31 +1879,29 @@
                     return;
                 }
 
-                // Sort players by bench counts: Set 1 (most important), then Set 2, then Set 3, then Total
-                // DESCENDING order - most benches first
-                const sortedPlayers = [...players].sort((a, b) => {
-                    // Priority 1: Set 1 benches (descending - most benches first)
-                    if (a.set1Benches !== b.set1Benches) {
-                        return b.set1Benches - a.set1Benches;
+                // Calculate weighted bench scores for each player
+                // Weights: Set 1 = 1.0, Set 2 = 0.8, Set 3 = 0.6
+                const playersWithScores = players.map(player => ({
+                    ...player,
+                    weightedScore: (player.set1Benches * 1.0) + (player.set2Benches * 0.8) + (player.set3Benches * 0.6)
+                }));
+
+                // Sort players by weighted score (descending - highest score first)
+                const sortedPlayers = [...playersWithScores].sort((a, b) => {
+                    // Priority 1: Weighted score (descending - highest score first)
+                    if (a.weightedScore !== b.weightedScore) {
+                        return b.weightedScore - a.weightedScore;
                     }
-                    // Priority 2: Set 2 benches
-                    if (a.set2Benches !== b.set2Benches) {
-                        return b.set2Benches - a.set2Benches;
-                    }
-                    // Priority 3: Set 3 benches
-                    if (a.set3Benches !== b.set3Benches) {
-                        return b.set3Benches - a.set3Benches;
-                    }
-                    // Priority 4: Total benches
+                    // Priority 2: Total benches
                     if (a.totalBenches !== b.totalBenches) {
                         return b.totalBenches - a.totalBenches;
                     }
-                    // Priority 5: Name (alphabetical)
+                    // Priority 3: Name (alphabetical)
                     return a.name.localeCompare(b.name);
                 });
 
-                // Calculate max total benches for proportional display
-                const maxTotalBenches = sortedPlayers.length > 0 ? sortedPlayers[0].totalBenches : 0;
+                // Calculate max weighted score for proportional display
+                const maxWeightedScore = sortedPlayers.length > 0 ? sortedPlayers[0].weightedScore : 0;
 
                 let html = `<div class="stats-table-wrapper"><table class="stats-table">
                     <thead>
@@ -1772,33 +1920,33 @@
                 sortedPlayers.forEach((player, index) => {
                     const rank = index + 1;
                     
-                    // Calculate proportion of benches (0 to 1)
-                    const proportion = maxTotalBenches > 0 ? player.totalBenches / maxTotalBenches : 0;
+                    // Calculate proportion of weighted score (0 to 1)
+                    const proportion = maxWeightedScore > 0 ? player.weightedScore / maxWeightedScore : 0;
                     
-                    // Generate bench icons - show up to 5 benches proportionally filled
-                    const totalBenchIcons = 5;
-                    const filledBenches = Math.round(proportion * totalBenchIcons);
-                    const emptyBenches = totalBenchIcons - filledBenches;
-                    
+                    // Create a single chair with proportional fill using CSS
                     let benchVisual = '';
-                    // Add filled benches (🪑 or 💺)
-                    for (let i = 0; i < filledBenches; i++) {
-                        benchVisual += '<span style="font-size: 1.3em; color: #667eea;">🪑</span>';
-                    }
-                    // Add empty benches (⬜ or lighter icon)
-                    for (let i = 0; i < emptyBenches; i++) {
-                        benchVisual += '<span style="font-size: 1.3em; opacity: 0.2;">🪑</span>';
-                    }
                     
-                    // If no benches at all, show empty
-                    if (player.totalBenches === 0) {
-                        benchVisual = '<span style="opacity: 0.3; font-size: 0.9em;">No benches</span>';
+                    if (player.weightedScore === 0) {
+                        // Empty chair for players with no benches
+                        benchVisual = '<div style="position: relative; display: inline-block; font-size: 2.5em; opacity: 0.2;">🪑</div>';
+                    } else {
+                        // Calculate percentage for CSS clip
+                        const fillPercent = Math.round(proportion * 100);
+                        
+                        benchVisual = `
+                            <div style="position: relative; display: inline-block; font-size: 2.5em; width: 1.2em; height: 1.2em;">
+                                <!-- Background (empty/faded chair) -->
+                                <div style="position: absolute; top: 0; left: 0; opacity: 0.2; color: #667eea;">🪑</div>
+                                <!-- Foreground (filled chair) - clipped from bottom to show fill from top -->
+                                <div style="position: absolute; top: 0; left: 0; color: #667eea; clip-path: inset(${100 - fillPercent}% 0 0 0);">🪑</div>
+                            </div>
+                        `;
                     }
 
                     html += `<tr>
                         <td style="text-align: center; font-weight: bold; color: #667eea;">${rank}</td>
                         <td><strong>${player.name}</strong></td>
-                        <td style="text-align: center; white-space: nowrap;">${benchVisual}</td>
+                        <td style="text-align: center;">${benchVisual}</td>
                         <td style="text-align: center;">${player.set1Benches}</td>
                         <td style="text-align: center;">${player.set2Benches}</td>
                         <td style="text-align: center;">${player.set3Benches}</td>
@@ -1809,12 +1957,17 @@
                 html += `</tbody></table></div>`;
                 html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; color: #666;">
                     <strong>Understanding the Bench Visual:</strong><br>
-                    🪑 <strong>Filled benches</strong> = Proportional to total bench time<br>
-                    <span style="opacity: 0.3;">🪑</span> <strong>Empty benches</strong> = Remaining capacity<br>
-                    The player with the most total benches gets 5 filled benches (100%)<br>
+                    🪑 <strong>Filled from top to bottom</strong> = Shows weighted bench score<br>
+                    <span style="opacity: 0.3;">🪑</span> <strong>Faded part</strong> = Unfilled portion<br>
+                    The player ranked #1 (highest weighted score) has a completely filled chair (100%)<br>
+                    Other players have proportionally filled chairs based on their weighted score<br>
                     <br>
-                    <strong>Ranking Priority:</strong> Players ranked by most benches in this order:<br>
-                    1️⃣ Set 1 benches (most important) → 2️⃣ Set 2 → 3️⃣ Set 3 → 4️⃣ Total benches
+                    <strong>Weighted Scoring System:</strong><br>
+                    Set 1 benches: <strong>1.0 point</strong> each (most important)<br>
+                    Set 2 benches: <strong>0.8 points</strong> each<br>
+                    Set 3 benches: <strong>0.6 points</strong> each<br>
+                    <br>
+                    <strong>Ranking Priority:</strong> Players ranked by highest weighted score first
                 </div>`;
                 
                 document.getElementById('statsContainer').innerHTML = html;
