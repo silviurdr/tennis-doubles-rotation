@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+    <title>Tennis Rotation Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .player-input-group {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .player-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-input label {
+            width: 80px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .player-input input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .player-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .sets-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .set-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .set-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .bench-selection {
+            margin: 15px 0;
+        }
+
+        .bench-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bench-option {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .bench-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .bench-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .bench-option.ineligible {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .bench-option.rank-1 {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .bench-option.rank-1.selected {
+            background: #28a745;
+            color: white;
+        }
+
+        .bench-option.rank-2 {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .bench-option.rank-2.selected {
+            background: #ffc107;
+            color: white;
+        }
+
+        .bench-option.rank-3 {
+            border-color: #17a2b8;
+            background: #d1ecf1;
+        }
+
+        .bench-option.rank-3.selected {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .rank-1 .rank-badge {
+            background: #28a745;
+        }
+
+        .rank-2 .rank-badge {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .rank-3 .rank-badge {
+            background: #17a2b8;
+        }
+
+        .bench-option.selected .rank-badge {
+            background: rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .court-display {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .court-display h4 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .players-on-court {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .player-chip {
+            padding: 8px 16px;
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .winner-selection {
+            margin: 15px 0;
+        }
+
+        .winner-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .winner-option {
+            flex: 1;
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .winner-option:hover {
+            border-color: #28a745;
+        }
+
+        .winner-option.selected {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .stats-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stats-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .week-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .week-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .week-sets {
+            display: grid;
+            gap: 10px;
+        }
+
+        .week-set {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .week-set-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .winner-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .export-import-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .manual-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 10px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .manual-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .manual-winner-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .manual-winner-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .manual-winner-option:hover {
+            border-color: #28a745;
+        }
+
+        .manual-winner-option.selected {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .team-builder {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .team-builder h4 {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .team-box {
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9ff;
+        }
+
+        .team-box h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .player-dropzone {
+            min-height: 80px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-dropzone.has-players {
+            border-style: solid;
+            border-color: #667eea;
+        }
+
+        .available-players {
+            margin-top: 15px;
+        }
+
+        .available-players h5 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .player-draggable {
+            padding: 8px 16px;
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .player-draggable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .player-draggable.in-team {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+        }
+
+        .team-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .manual-winner-option.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .no-data-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .nav-tab {
+                font-size: 0.9em;
+                padding: 12px;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .winner-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎾 Tennis Rotation Manager</h1>
+            <p>Fair doubles rotation for 5 players</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="setup">Setup</button>
+            <button class="nav-tab" data-tab="week">Current Week</button>
+            <button class="nav-tab" data-tab="manual">Add Historical Data</button>
+            <button class="nav-tab" data-tab="stats">Statistics</button>
+            <button class="nav-tab" data-tab="history">History</button>
+            <button class="nav-tab" data-tab="data">Data</button>
+        </div>
+
+        <!-- Setup Tab -->
+        <div id="setup" class="tab-content active">
+            <div class="section">
+                <h2 class="section-title">Player Setup</h2>
+                <div class="player-input-group">
+                    <div class="player-input">
+                        <label>Player 1:</label>
+                        <input type="text" id="player1" placeholder="Enter name">
+                    </div>
+                    <div class="player-input">
+                        <label>Player 2:</label>
+                        <input type="text" id="player2" placeholder="Enter name">
+                    </div>
+                    <div class="player-input">
+                        <label>Player 3:</label>
+                        <input type="text" id="player3" placeholder="Enter name">
+                    </div>
+                    <div class="player-input">
+                        <label>Player 4:</label>
+                        <input type="text" id="player4" placeholder="Enter name">
+                    </div>
+                    <div class="player-input">
+                        <label>Player 5:</label>
+                        <input type="text" id="player5" placeholder="Enter name">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="savePlayers()">Save Players</button>
+            </div>
+        </div>
+
+        <!-- Current Week Tab -->
+        <div id="week" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">Weekly Match</h2>
+                <div id="weekStatus"></div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="startNewWeek()" id="newWeekBtn">Start New Week</button>
+                    <button class="btn btn-danger" onclick="resetCurrentWeekNoConfirm()" id="resetWeekBtn" style="display: none; z-index: 10; position: relative;">🗑️ Clear & Restart Week</button>
+                </div>
+                <div id="setsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Manual Historical Data Tab -->
+        <div id="manual" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">Add Historical Week Data</h2>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Use this form to manually enter data from previous weeks. This will update player statistics and improve future recommendations.
+                </p>
+
+                <div class="set-card">
+                    <h3>Week Number</h3>
+                    <div class="player-input">
+                        <label>Week #:</label>
+                        <input type="number" id="manualWeekNumber" min="1" placeholder="Enter week number" style="max-width: 200px;">
+                    </div>
+                </div>
+
+                <div class="sets-container" id="manualSetsContainer">
+                    <!-- Set 1 -->
+                    <div class="set-card">
+                        <h3>Set 1</h3>
+                        <div class="bench-selection">
+                            <h4>Bench Player:</h4>
+                            <select id="manualSet1Bench" class="manual-select">
+                                <option value="">Select player...</option>
+                            </select>
+                        </div>
+                        <div class="winner-selection">
+                            <h4>Winning Team:</h4>
+                            <div id="manualSet1Winners"></div>
+                        </div>
+                    </div>
+
+                    <!-- Set 2 -->
+                    <div class="set-card">
+                        <h3>Set 2</h3>
+                        <div class="bench-selection">
+                            <h4>Bench Player:</h4>
+                            <select id="manualSet2Bench" class="manual-select">
+                                <option value="">Select player...</option>
+                            </select>
+                        </div>
+                        <div class="winner-selection">
+                            <h4>Winning Team:</h4>
+                            <div id="manualSet2Winners"></div>
+                        </div>
+                    </div>
+
+                    <!-- Set 3 -->
+                    <div class="set-card">
+                        <h3>Set 3</h3>
+                        <div class="bench-selection">
+                            <h4>Bench Player:</h4>
+                            <select id="manualSet3Bench" class="manual-select">
+                                <option value="">Select player...</option>
+                            </select>
+                        </div>
+                        <div class="winner-selection">
+                            <h4>Winning Team:</h4>
+                            <div id="manualSet3Winners"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="manualStatus" style="margin-top: 20px;"></div>
+                <button class="btn btn-success" onclick="saveManualWeek()" style="margin-top: 20px;">
+                    💾 Save Historical Week
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="stats" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">Bench Statistics</h2>
+                <div id="statsContainer"></div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">Match History</h2>
+                <div id="historyContainer"></div>
+            </div>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="data" class="tab-content">
+            <div class="section">
+                <h2 class="section-title">Data Management</h2>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Your data is automatically saved in your browser's IndexedDB. 
+                    Use these tools to backup or restore your data.
+                </p>
+                
+                <div class="export-import-section">
+                    <button class="btn btn-success" onclick="exportData()">
+                        📥 Export Data (JSON)
+                    </button>
+                    
+                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
+                        📤 Import Data (JSON)
+                    </button>
+                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+                    
+                    <button class="btn btn-danger" onclick="clearAllData()">
+                        🗑️ Clear All Data
+                    </button>
+                </div>
+
+                <div id="dataStatus" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler to prevent console spam
+        window.addEventListener('error', function(e) {
+            // Silently log errors without showing to user
+            console.warn('Caught error:', e.message);
+            e.preventDefault();
+            return true;
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            console.warn('Caught promise rejection:', e.reason);
+            e.preventDefault();
+        });
+
+        // Database management
+        let db;
+        const DB_NAME = 'TennisRotationDB';
+        const DB_VERSION = 1;
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Check if IndexedDB is available
+                    if (!window.indexedDB) {
+                        console.error('IndexedDB not supported');
+                        reject(new Error('IndexedDB not supported'));
+                        return;
+                    }
+
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                    request.onerror = (event) => {
+                        console.error('Database error:', event);
+                        reject(new Error('Failed to open database'));
+                    };
+
+                    request.onsuccess = (event) => {
+                        db = event.target.result;
+                        
+                        // Add error handler for database
+                        db.onerror = (event) => {
+                            console.error('Database error:', event);
+                        };
+                        
+                        console.log('Database initialized successfully');
+                        resolve(db);
+                    };
+
+                    request.onupgradeneeded = (event) => {
+                        try {
+                            db = event.target.result;
+                            
+                            if (!db.objectStoreNames.contains('players')) {
+                                db.createObjectStore('players', { keyPath: 'id' });
+                            }
+                            
+                            if (!db.objectStoreNames.contains('weeks')) {
+                                db.createObjectStore('weeks', { keyPath: 'weekNumber' });
+                            }
+                            
+                            if (!db.objectStoreNames.contains('currentWeek')) {
+                                db.createObjectStore('currentWeek', { keyPath: 'id' });
+                            }
+                            
+                            console.log('Database schema created');
+                        } catch (err) {
+                            console.error('Error creating database schema:', err);
+                            reject(err);
+                        }
+                    };
+
+                    request.onblocked = () => {
+                        console.warn('Database upgrade blocked by another tab');
+                    };
+
+                } catch (err) {
+                    console.error('Error initializing database:', err);
+                    reject(err);
+                }
+            });
+        }
+
+        // Database operations
+        async function saveToStore(storeName, data) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                await store.put(data);
+                return await new Promise((resolve, reject) => {
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (error) {
+                console.error('Error saving to store:', storeName, error);
+                throw error;
+            }
+        }
+
+        async function getFromStore(storeName, key) {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.get(key);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (error) {
+                console.error('Error getting from store:', storeName, key, error);
+                return null;
+            }
+        }
+
+        async function getAllFromStore(storeName) {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (error) {
+                console.error('Error getting all from store:', storeName, error);
+                return [];
+            }
+        }
+
+        async function clearStore(storeName) {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                await store.clear();
+                return await new Promise((resolve, reject) => {
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (error) {
+                console.error('Error clearing store:', storeName, error);
+                throw error;
+            }
+        }
+
+        // Tab navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+                
+                if (targetTab === 'stats') displayStats();
+                if (targetTab === 'history') displayHistory();
+                if (targetTab === 'week') displayCurrentWeek();
+                if (targetTab === 'manual') initManualEntry();
+            });
+        });
+
+        // Player management
+        async function savePlayers() {
+            try {
+                const players = [];
+                for (let i = 1; i <= 5; i++) {
+                    const name = document.getElementById(`player${i}`).value.trim();
+                    if (!name) {
+                        alert('Please enter all 5 player names');
+                        return;
+                    }
+                    players.push({
+                        id: i,
+                        name: name,
+                        set1Benches: 0,
+                        set2Benches: 0,
+                        set3Benches: 0,
+                        totalBenches: 0
+                    });
+                }
+
+                await saveToStore('players', { id: 'playerList', players: players });
+                alert('Players saved successfully!');
+            } catch (error) {
+                console.error('Error saving players:', error);
+                alert('Error saving players. Please try again.');
+            }
+        }
+
+        async function loadPlayers() {
+            try {
+                const data = await getFromStore('players', 'playerList');
+                if (data && data.players) {
+                    data.players.forEach((player, index) => {
+                        const input = document.getElementById(`player${index + 1}`);
+                        if (input) {
+                            input.value = player.name;
+                        }
+                    });
+                    return data.players;
+                }
+                return null;
+            } catch (error) {
+                console.error('Error loading players:', error);
+                return null;
+            }
+        }
+
+        // Week management
+        async function startNewWeek() {
+            try {
+                const players = await loadPlayers();
+                if (!players) {
+                    alert('Please set up players first!');
+                    return;
+                }
+
+                const weeks = await getAllFromStore('weeks');
+                const weekNumber = weeks.length + 1;
+
+                const currentWeek = {
+                    id: 'current',
+                    weekNumber: weekNumber,
+                    sets: [
+                        { number: 1, bench: null, team1: null, team2: null, winners: null, locked: false },
+                        { number: 2, bench: null, team1: null, team2: null, winners: null, locked: false },
+                        { number: 3, bench: null, team1: null, team2: null, winners: null, locked: false }
+                    ],
+                    completed: false
+                };
+
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error starting new week:', error);
+                alert('Error starting new week. Please try again.');
+            }
+        }
+
+        // Rank eligible players by fairness algorithm
+        function rankPlayersByFairness(eligiblePlayers, setNumber, currentWeek = null) {
+            const ranked = [...eligiblePlayers].sort((a, b) => {
+                // CRITICAL: Deprioritize players who were already benched THIS WEEK
+                // Check if player was benched in Set 1 (when ranking for Set 2 or 3)
+                // or in Set 1 or 2 (when ranking for Set 3)
+                if (currentWeek) {
+                    const aBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === a.id);
+                    const bBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === b.id);
+                    
+                    // If A was benched this week but B wasn't, B is better
+                    if (aBenchedThisWeek && !bBenchedThisWeek) return 1;
+                    // If B was benched this week but A wasn't, A is better
+                    if (bBenchedThisWeek && !aBenchedThisWeek) return -1;
+                    // If both or neither were benched this week, continue with normal fairness
+                }
+
+                // Priority 1: Set-specific benches
+                if (setNumber === 1) {
+                    if (a.set1Benches !== b.set1Benches) {
+                        return a.set1Benches - b.set1Benches;
+                    }
+                } else if (setNumber === 2) {
+                    if (a.set2Benches !== b.set2Benches) {
+                        return a.set2Benches - b.set2Benches;
+                    }
+                } else if (setNumber === 3) {
+                    if (a.set3Benches !== b.set3Benches) {
+                        return a.set3Benches - b.set3Benches;
+                    }
+                }
+
+                // Priority 2: Set 1 benches (if not already compared)
+                if (setNumber !== 1 && a.set1Benches !== b.set1Benches) {
+                    return a.set1Benches - b.set1Benches;
+                }
+
+                // Priority 3: Set 2 benches (if not already compared)
+                if (setNumber !== 2 && a.set2Benches !== b.set2Benches) {
+                    return a.set2Benches - b.set2Benches;
+                }
+
+                // Priority 4: Set 3 benches (if not already compared)
+                if (setNumber !== 3 && a.set3Benches !== b.set3Benches) {
+                    return a.set3Benches - b.set3Benches;
+                }
+
+                // Priority 5: Total benches
+                if (a.totalBenches !== b.totalBenches) {
+                    return a.totalBenches - b.totalBenches;
+                }
+
+                // Priority 6: Random (stable sort by ID)
+                return a.id - b.id;
+            });
+
+            return ranked;
+        }
+
+        async function displayCurrentWeek() {
+            const currentWeek = await getFromStore('currentWeek', 'current');
+            const players = await loadPlayers();
+
+            const newWeekBtn = document.getElementById('newWeekBtn');
+            const resetWeekBtn = document.getElementById('resetWeekBtn');
+
+            if (!newWeekBtn || !resetWeekBtn) {
+                console.error('Week buttons not found in DOM');
+                return;
+            }
+
+            if (!currentWeek || currentWeek.completed) {
+                document.getElementById('weekStatus').innerHTML = 
+                    '<div class="status-info">No active week. Start a new week to begin.</div>';
+                newWeekBtn.disabled = false;
+                newWeekBtn.style.display = 'inline-block';
+                resetWeekBtn.style.display = 'none';
+                document.getElementById('setsContainer').innerHTML = '';
+                return;
+            }
+
+            newWeekBtn.disabled = true;
+            newWeekBtn.style.display = 'none';
+            resetWeekBtn.style.display = 'inline-block';
+            resetWeekBtn.disabled = false;
+            console.log('Reset button should now be visible');
+            document.getElementById('weekStatus').innerHTML = 
+                `<div class="status-success">Week ${currentWeek.weekNumber} - In Progress</div>`;
+
+            let html = '<div class="sets-container">';
+
+            for (let i = 0; i < 3; i++) {
+                const set = currentWeek.sets[i];
+                const ineligible = i > 0 && currentWeek.sets[i-1].winners ? 
+                    currentWeek.sets[i-1].winners : [];
+
+                html += `<div class="set-card">
+                    <h3>Set ${set.number}</h3>`;
+
+                // Bench selection
+                if (!set.locked) {
+                    html += `<div class="bench-selection">
+                        <h4>Select Bench Player (Ranked Best to Worst):</h4>
+                        <div class="bench-options">`;
+
+                    // Get eligible and ineligible players
+                    const eligiblePlayers = players.filter(p => !ineligible.includes(p.id));
+                    const ineligiblePlayers = players.filter(p => ineligible.includes(p.id));
+
+                    // Rank eligible players by fairness algorithm (pass currentWeek for same-week awareness)
+                    const rankedEligible = rankPlayersByFairness(eligiblePlayers, set.number, currentWeek);
+
+                    // Display all eligible players ranked 1-2-3 (best to worst)
+                    rankedEligible.forEach((player, index) => {
+                        const isSelected = set.bench === player.id;
+                        let rank, rankClass, rankLabel;
+                        
+                        if (rankedEligible.length >= 3) {
+                            // If 3+ eligible: show as 1st, 2nd, 3rd
+                            rank = index < 3 ? index + 1 : 0;
+                            rankClass = rank > 0 ? `rank-${rank}` : '';
+                            rankLabel = rank === 1 ? '🥇 Best' : rank === 2 ? '🥈 2nd' : rank === 3 ? '🥉 3rd' : '';
+                        } else if (rankedEligible.length === 2) {
+                            // If 2 eligible: show as 1st and 2nd
+                            rank = index < 2 ? index + 1 : 0;
+                            rankClass = rank > 0 ? `rank-${rank}` : '';
+                            rankLabel = rank === 1 ? '🥇 Best' : rank === 2 ? '🥈 2nd' : '';
+                        } else {
+                            // If 1 eligible: show as 1st only
+                            rank = 1;
+                            rankClass = 'rank-1';
+                            rankLabel = '🥇 Only Option';
+                        }
+                        
+                        html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
+                            onclick="selectBench(${set.number}, ${player.id})">
+                            ${player.name}
+                            ${rankLabel ? `<span class="rank-badge">${rankLabel}</span>` : ''}
+                        </div>`;
+                    });
+
+                    // Display ineligible players last (grayed out)
+                    ineligiblePlayers.forEach(player => {
+                        const isSelected = set.bench === player.id;
+                        html += `<div class="bench-option ineligible ${isSelected ? 'selected' : ''}" 
+                            onclick="">
+                            ${player.name} ❌ (Winner last set)
+                        </div>`;
+                    });
+
+                    html += `</div></div>`;
+                }
+
+                // Court display
+                if (set.bench !== null) {
+                    // Check if both teams are complete (2 players each)
+                    const teamsComplete = set.team1 && set.team1.length === 2 && set.team2 && set.team2.length === 2;
+                    
+                    // Team Builder - show until both teams are complete
+                    if (!set.locked && !teamsComplete) {
+                        html += `<div class="team-builder">
+                            <h4>Build Teams (Click players to assign):</h4>
+                            <div class="teams-grid">
+                                <div class="team-box">
+                                    <h5>Team 1</h5>
+                                    <div class="player-dropzone ${set.team1 && set.team1.length === 2 ? 'has-players' : ''}" id="team1-set${set.number}">
+                                        ${set.team1 && set.team1.length > 0 ? set.team1.map(id => {
+                                            const p = players.find(pl => pl.id === id);
+                                            return `<span class="player-draggable in-team" onclick="removeFromTeam(${set.number}, 1, ${id})">${p.name} ✕</span>`;
+                                        }).join('') : '<span style="color: #999; font-style: italic;">Click 2 players below</span>'}
+                                    </div>
+                                </div>
+                                <div class="team-box">
+                                    <h5>Team 2</h5>
+                                    <div class="player-dropzone ${set.team2 && set.team2.length === 2 ? 'has-players' : ''}" id="team2-set${set.number}">
+                                        ${set.team2 && set.team2.length > 0 ? set.team2.map(id => {
+                                            const p = players.find(pl => pl.id === id);
+                                            return `<span class="player-draggable in-team" onclick="removeFromTeam(${set.number}, 2, ${id})">${p.name} ✕</span>`;
+                                        }).join('') : '<span style="color: #999; font-style: italic;">Click 2 players below</span>'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="available-players">
+                                <h5>Available Players (click to add to Team 1 or Team 2):</h5>`;
+                        
+                        const onCourt = players.filter(p => p.id !== set.bench);
+                        const assignedIds = [...(set.team1 || []), ...(set.team2 || [])];
+                        const availablePlayers = onCourt.filter(p => !assignedIds.includes(p.id));
+                        
+                        availablePlayers.forEach(p => {
+                            html += `<span class="player-draggable" onclick="addToTeam(${set.number}, ${p.id})">${p.name}</span>`;
+                        });
+                        
+                        if (availablePlayers.length === 0) {
+                            html += '<span style="color: #28a745; font-weight: 600;">✓ All players assigned!</span>';
+                        }
+                        
+                        html += `</div></div>`;
+                    }
+
+                    // Display locked teams - only show when BOTH teams have 2 players
+                    if (teamsComplete) {
+                        const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
+                        const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+                        
+                        html += `<div class="court-display">
+                            <h4>Teams on Court:</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                                <div style="padding: 10px; background: #e7f3ff; border-radius: 5px; border: 2px solid #667eea;">
+                                    <strong>Team 1:</strong><br>
+                                    ${team1Players.join(' & ')}
+                                </div>
+                                <div style="padding: 10px; background: #e7f3ff; border-radius: 5px; border: 2px solid #667eea;">
+                                    <strong>Team 2:</strong><br>
+                                    ${team2Players.join(' & ')}
+                                </div>
+                            </div>
+                        </div>`;
+
+                        // Winner selection
+                        if (!set.locked) {
+                            html += `<div class="winner-selection">
+                                <h4>Select Winning Team ${set.number === 3 ? '(Optional for Set 3)' : ''}:</h4>
+                                <div class="winner-options">
+                                    <div class="winner-option ${set.winners && JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team1].sort()) ? 'selected' : ''}"
+                                        onclick="selectWinners(${set.number}, [${set.team1}])">
+                                        Team 1: ${team1Players.join(' & ')}
+                                    </div>
+                                    <div class="winner-option ${set.winners && JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team2].sort()) ? 'selected' : ''}"
+                                        onclick="selectWinners(${set.number}, [${set.team2}])">
+                                        Team 2: ${team2Players.join(' & ')}
+                                    </div>
+                                </div>
+                            </div>`;
+
+                            // For Set 3, allow locking without winner
+                            if (set.number === 3) {
+                                html += `<div style="display: flex; gap: 10px; margin-top: 10px;">`;
+                                if (set.winners) {
+                                    html += `<button class="btn btn-success" onclick="lockSet(${set.number})">Lock Set ${set.number} with Winner</button>`;
+                                }
+                                html += `<button class="btn btn-secondary" onclick="lockSet(${set.number}, true)">Lock Set ${set.number} - No Winner (Time Limit)</button>
+                                </div>`;
+                            } else {
+                                // Sets 1 and 2 require a winner
+                                if (set.winners) {
+                                    html += `<button class="btn btn-success" onclick="lockSet(${set.number})">Lock Set ${set.number}</button>`;
+                                }
+                            }
+                        }
+
+                        if (set.locked) {
+                            const winnerTeamNum = set.winners ? (JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team1].sort()) ? 1 : 2) : null;
+                            const winnerNames = winnerTeamNum ? (winnerTeamNum === 1 ? team1Players.join(' & ') : team2Players.join(' & ')) : null;
+                            html += `<div class="status-success">
+                                ✓ Set locked${winnerNames ? ` - Winners: Team ${winnerTeamNum} (${winnerNames})` : ' - No winner (time limit)'}
+                            </div>`;
+                        }
+                    }
+                } else {
+                    html += `<button class="btn btn-primary" onclick="autoSelectBench(${set.number})">
+                        Auto-Select Fair Bench
+                    </button>`;
+                }
+
+                html += `</div>`;
+            }
+
+            html += '</div>';
+
+            // Add complete week button
+            if (currentWeek.sets.every(s => s.locked)) {
+                html += `<button class="btn btn-success" onclick="completeWeek()" style="margin-top: 20px;">
+                    Complete Week ${currentWeek.weekNumber}
+                </button>`;
+            }
+
+            document.getElementById('setsContainer').innerHTML = html;
+        }
+
+        async function selectBench(setNumber, playerId) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                currentWeek.sets[setNumber - 1].bench = playerId;
+                // Reset teams when bench changes
+                currentWeek.sets[setNumber - 1].team1 = null;
+                currentWeek.sets[setNumber - 1].team2 = null;
+                currentWeek.sets[setNumber - 1].winners = null;
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error selecting bench:', error);
+            }
+        }
+
+        async function addToTeam(setNumber, playerId) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                const set = currentWeek.sets[setNumber - 1];
+
+                // Initialize arrays if they don't exist
+                if (!set.team1) set.team1 = [];
+                if (!set.team2) set.team2 = [];
+
+                // Add to Team 1 if it has space
+                if (set.team1.length < 2) {
+                    set.team1.push(playerId);
+                } 
+                // Otherwise add to Team 2 if it has space
+                else if (set.team2.length < 2) {
+                    set.team2.push(playerId);
+                }
+
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error adding to team:', error);
+            }
+        }
+
+        async function removeFromTeam(setNumber, teamNumber, playerId) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                const set = currentWeek.sets[setNumber - 1];
+
+                if (teamNumber === 1 && set.team1) {
+                    set.team1 = set.team1.filter(id => id !== playerId);
+                    if (set.team1.length === 0) set.team1 = null;
+                } else if (teamNumber === 2 && set.team2) {
+                    set.team2 = set.team2.filter(id => id !== playerId);
+                    if (set.team2.length === 0) set.team2 = null;
+                }
+
+                // Reset winners when teams change
+                set.winners = null;
+
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error removing from team:', error);
+            }
+        }
+
+        async function autoSelectBench(setNumber) {
+            try {
+                const players = await loadPlayers();
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!players || !currentWeek) return;
+
+                // Get ineligible players
+                const ineligible = setNumber > 1 && currentWeek.sets[setNumber - 2].winners ? 
+                    currentWeek.sets[setNumber - 2].winners : [];
+
+                // Get eligible players
+                const eligiblePlayers = players.filter(p => !ineligible.includes(p.id));
+
+                // Rank and select the best option (first in ranked list, with same-week awareness)
+                const rankedEligible = rankPlayersByFairness(eligiblePlayers, setNumber, currentWeek);
+                currentWeek.sets[setNumber - 1].bench = rankedEligible[0].id;
+
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error auto-selecting bench:', error);
+            }
+        }
+
+        async function selectWinners(setNumber, winners) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                currentWeek.sets[setNumber - 1].winners = winners;
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error selecting winners:', error);
+            }
+        }
+
+        async function lockSet(setNumber, noWinner = false) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                const set = currentWeek.sets[setNumber - 1];
+                
+                // For Sets 1 and 2, require a winner
+                if (setNumber !== 3 && !set.winners) {
+                    alert('Please select a winning team before locking this set.');
+                    return;
+                }
+                
+                // For Set 3, allow locking without winner if noWinner flag is true
+                if (setNumber === 3 && noWinner) {
+                    set.winners = null; // Explicitly set to null for no winner
+                }
+                
+                set.locked = true;
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error locking set:', error);
+            }
+        }
+
+        async function resetCurrentWeekNoConfirm() {
+            console.log('resetCurrentWeekNoConfirm called - NO CONFIRMATION');
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                console.log('Current week data:', currentWeek);
+                
+                if (!currentWeek) {
+                    alert('No active week to reset.');
+                    return;
+                }
+
+                // Clear the current week data WITHOUT confirmation
+                console.log('Clearing current week (no confirmation)...');
+                await clearStore('currentWeek');
+                console.log('Current week cleared successfully');
+
+                // Refresh the display
+                console.log('Refreshing display...');
+                await displayCurrentWeek();
+                console.log('Display refreshed');
+                
+                // Show brief success message
+                console.log('Week reset completed successfully');
+
+            } catch (error) {
+                console.error('Error resetting current week:', error);
+                alert('❌ Error resetting week:\n\n' + error.message + '\n\nPlease try again or refresh the page.');
+            }
+        }
+
+        async function resetCurrentWeek() {
+            console.log('resetCurrentWeek called');
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                console.log('Current week data:', currentWeek);
+                
+                if (!currentWeek) {
+                    alert('No active week to reset.');
+                    return;
+                }
+
+                // More prominent confirmation dialog
+                const confirmMessage = 
+                    `⚠️ RESET WEEK ${currentWeek.weekNumber}? ⚠️\n\n` +
+                    `This will DELETE all current data:\n` +
+                    `• All bench selections\n` +
+                    `• All team assignments\n` +
+                    `• All winner selections\n\n` +
+                    `Historical data will NOT be affected.\n\n` +
+                    `Click OK to RESET, or Cancel to keep current week.`;
+
+                const confirmReset = confirm(confirmMessage);
+
+                console.log('User confirmed reset:', confirmReset);
+
+                if (!confirmReset) {
+                    console.log('User cancelled reset');
+                    return;
+                }
+
+                // Clear the current week data
+                console.log('Clearing current week...');
+                await clearStore('currentWeek');
+                console.log('Current week cleared successfully');
+
+                // Refresh the display
+                console.log('Refreshing display...');
+                await displayCurrentWeek();
+                console.log('Display refreshed');
+                
+                // Show success message AFTER the display has been updated
+                setTimeout(() => {
+                    alert('✅ Week reset successfully!\n\nYou can now start a new week.');
+                }, 100);
+
+            } catch (error) {
+                console.error('Error resetting current week:', error);
+                alert('❌ Error resetting week:\n\n' + error.message + '\n\nPlease try again or refresh the page.');
+            }
+        }
+
+        async function completeWeek() {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                const players = await loadPlayers();
+                if (!currentWeek || !players) return;
+
+                // Update player statistics
+                currentWeek.sets.forEach((set, index) => {
+                    const player = players.find(p => p.id === set.bench);
+                    if (player) {
+                        if (index === 0) player.set1Benches++;
+                        if (index === 1) player.set2Benches++;
+                        if (index === 2) player.set3Benches++;
+                        player.totalBenches++;
+                    }
+                });
+
+                // Save updated players
+                await saveToStore('players', { id: 'playerList', players: players });
+
+                // Save completed week
+                currentWeek.completed = true;
+                await saveToStore('weeks', currentWeek);
+
+                // Clear current week
+                await clearStore('currentWeek');
+
+                alert(`Week ${currentWeek.weekNumber} completed!`);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error completing week:', error);
+                alert('Error completing week. Please try again.');
+            }
+        }
+
+        // Statistics display
+        async function displayStats() {
+            try {
+                const players = await loadPlayers();
+                if (!players) {
+                    document.getElementById('statsContainer').innerHTML = 
+                        '<div class="no-data"><div class="no-data-icon">📊</div><p>No statistics yet. Set up players and complete some weeks first.</p></div>';
+                    return;
+                }
+
+                // Sort players by bench counts: Set 1 (most important), then Set 2, then Set 3, then Total
+                // DESCENDING order - most benches first
+                const sortedPlayers = [...players].sort((a, b) => {
+                    // Priority 1: Set 1 benches (descending - most benches first)
+                    if (a.set1Benches !== b.set1Benches) {
+                        return b.set1Benches - a.set1Benches;
+                    }
+                    // Priority 2: Set 2 benches
+                    if (a.set2Benches !== b.set2Benches) {
+                        return b.set2Benches - a.set2Benches;
+                    }
+                    // Priority 3: Set 3 benches
+                    if (a.set3Benches !== b.set3Benches) {
+                        return b.set3Benches - a.set3Benches;
+                    }
+                    // Priority 4: Total benches
+                    if (a.totalBenches !== b.totalBenches) {
+                        return b.totalBenches - a.totalBenches;
+                    }
+                    // Priority 5: Name (alphabetical)
+                    return a.name.localeCompare(b.name);
+                });
+
+                let html = `<table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Player</th>
+                            <th>Set 1 Benches</th>
+                            <th>Set 2 Benches</th>
+                            <th>Set 3 Benches</th>
+                            <th>Total Benches</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                sortedPlayers.forEach((player, index) => {
+                    // Add rank with medals for top 3 (most benched)
+                    let rankDisplay;
+                    if (index === 0) rankDisplay = '🥇';
+                    else if (index === 1) rankDisplay = '🥈';
+                    else if (index === 2) rankDisplay = '🥉';
+                    else rankDisplay = index + 1;
+
+                    html += `<tr>
+                        <td style="text-align: center; font-size: 1.2em;"><strong>${rankDisplay}</strong></td>
+                        <td><strong>${player.name}</strong></td>
+                        <td>${player.set1Benches}</td>
+                        <td>${player.set2Benches}</td>
+                        <td>${player.set3Benches}</td>
+                        <td><strong>${player.totalBenches}</strong></td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table>`;
+                html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; color: #666;">
+                    <strong>Ranking Priority:</strong> Players are ranked by most benches in this order:<br>
+                    1️⃣ Set 1 benches (most important)<br>
+                    2️⃣ Set 2 benches<br>
+                    3️⃣ Set 3 benches<br>
+                    4️⃣ Total benches<br>
+                    <em>🥇 = Most benched player</em>
+                </div>`;
+                
+                document.getElementById('statsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error displaying stats:', error);
+                document.getElementById('statsContainer').innerHTML = 
+                    '<div class="status-warning">Error loading statistics.</div>';
+            }
+        }
+
+        // History display
+        async function displayHistory() {
+            const weeks = await getAllFromStore('weeks');
+            const players = await loadPlayers();
+
+            if (!weeks || weeks.length === 0) {
+                document.getElementById('historyContainer').innerHTML = 
+                    '<div class="no-data"><div class="no-data-icon">📜</div><p>No match history yet. Complete some weeks to see history.</p></div>';
+                return;
+            }
+
+            let html = '';
+            weeks.sort((a, b) => b.weekNumber - a.weekNumber).forEach(week => {
+                html += `<div class="week-card">
+                    <h3>Week ${week.weekNumber}</h3>
+                    <div class="week-sets">`;
+
+                week.sets.forEach(set => {
+                    const benchPlayer = players.find(p => p.id === set.bench);
+                    
+                    let winnerDisplay = '';
+                    if (!set.winners) {
+                        winnerDisplay = 'No winner (time limit)';
+                    } else if (set.team1 && set.team2) {
+                        const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
+                        const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+                        const isTeam1Winner = JSON.stringify([...set.winners].sort()) === JSON.stringify([...set.team1].sort());
+                        winnerDisplay = isTeam1Winner ? 
+                            `Team 1: ${team1Players.join(' & ')}` : 
+                            `Team 2: ${team2Players.join(' & ')}`;
+                    } else {
+                        const winnerNames = players.filter(p => set.winners && set.winners.includes(p.id))
+                            .map(p => p.name).join(' & ');
+                        winnerDisplay = winnerNames;
+                    }
+
+                    html += `<div class="week-set">
+                        <div class="week-set-header">
+                            <span>Set ${set.number}</span>
+                            <span class="winner-badge${!set.winners ? '' : ''}">${set.winners ? 'Winners' : 'Result'}: ${winnerDisplay}</span>
+                        </div>`;
+                    
+                    if (set.team1 && set.team2) {
+                        const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
+                        const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+                        html += `
+                            <div style="margin-top: 8px; font-size: 0.9em;">
+                                <div>Team 1: ${team1Players.join(' & ')}</div>
+                                <div>Team 2: ${team2Players.join(' & ')}</div>
+                            </div>`;
+                    }
+                    
+                    html += `<div style="margin-top: 5px;">Bench: <strong>${benchPlayer.name}</strong></div>
+                    </div>`;
+                });
+
+                html += `</div></div>`;
+            });
+
+            document.getElementById('historyContainer').innerHTML = html;
+        }
+
+        // Manual historical data entry
+        let manualWeekData = {
+            set1: { bench: null, team1: null, team2: null, winners: null },
+            set2: { bench: null, team1: null, team2: null, winners: null },
+            set3: { bench: null, team1: null, team2: null, winners: null }
+        };
+
+        async function initManualEntry() {
+            const players = await loadPlayers();
+            if (!players) {
+                document.getElementById('manualStatus').innerHTML = 
+                    '<div class="status-warning">Please set up players first in the Setup tab!</div>';
+                return;
+            }
+
+            // Reset manual data
+            manualWeekData = {
+                set1: { bench: null, team1: null, team2: null, winners: null },
+                set2: { bench: null, team1: null, team2: null, winners: null },
+                set3: { bench: null, team1: null, team2: null, winners: null }
+            };
+
+            // Populate bench dropdowns
+            for (let setNum = 1; setNum <= 3; setNum++) {
+                const select = document.getElementById(`manualSet${setNum}Bench`);
+                select.innerHTML = '<option value="">Select player...</option>';
+                players.forEach(player => {
+                    select.innerHTML += `<option value="${player.id}">${player.name}</option>`;
+                });
+
+                // Add change listener
+                select.addEventListener('change', (e) => {
+                    manualWeekData[`set${setNum}`].bench = e.target.value ? parseInt(e.target.value) : null;
+                    manualWeekData[`set${setNum}`].team1 = null;
+                    manualWeekData[`set${setNum}`].team2 = null;
+                    manualWeekData[`set${setNum}`].winners = null;
+                    updateManualWinnerOptions(setNum);
+                });
+            }
+
+            // Initialize winner sections
+            for (let setNum = 1; setNum <= 3; setNum++) {
+                updateManualWinnerOptions(setNum);
+            }
+
+            document.getElementById('manualStatus').innerHTML = '';
+        }
+
+        async function updateManualWinnerOptions(setNum) {
+            const players = await loadPlayers();
+            const benchId = manualWeekData[`set${setNum}`].bench;
+            const container = document.getElementById(`manualSet${setNum}Winners`);
+
+            if (!benchId) {
+                container.innerHTML = '<p style="color: #999; font-style: italic;">Select a bench player first</p>';
+                return;
+            }
+
+            const onCourt = players.filter(p => p.id !== parseInt(benchId));
+            
+            if (onCourt.length !== 4) {
+                container.innerHTML = '<p style="color: #999;">Invalid configuration</p>';
+                return;
+            }
+
+            // Show team builder
+            const set = manualWeekData[`set${setNum}`];
+            const assignedIds = [...(set.team1 || []), ...(set.team2 || [])];
+            const availablePlayers = onCourt.filter(p => !assignedIds.includes(p.id));
+
+            let html = `
+                <div class="team-builder" style="margin-top: 10px;">
+                    <h5 style="margin-bottom: 10px;">Build Teams:</h5>
+                    <div class="teams-grid">
+                        <div class="team-box">
+                            <h5>Team 1</h5>
+                            <div class="player-dropzone ${set.team1 && set.team1.length === 2 ? 'has-players' : ''}">
+                                ${set.team1 ? set.team1.map(id => {
+                                    const p = players.find(pl => pl.id === id);
+                                    return `<span class="player-draggable in-team" onclick="removeFromManualTeam(${setNum}, 1, ${id})">${p.name} ✕</span>`;
+                                }).join('') : '<span style="color: #999; font-style: italic; font-size: 0.9em;">Click 2 players below</span>'}
+                            </div>
+                        </div>
+                        <div class="team-box">
+                            <h5>Team 2</h5>
+                            <div class="player-dropzone ${set.team2 && set.team2.length === 2 ? 'has-players' : ''}">
+                                ${set.team2 ? set.team2.map(id => {
+                                    const p = players.find(pl => pl.id === id);
+                                    return `<span class="player-draggable in-team" onclick="removeFromManualTeam(${setNum}, 2, ${id})">${p.name} ✕</span>`;
+                                }).join('') : '<span style="color: #999; font-style: italic; font-size: 0.9em;">Click 2 players below</span>'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <h5 style="margin-bottom: 10px;">Available Players:</h5>`;
+            
+            availablePlayers.forEach(p => {
+                html += `<span class="player-draggable" onclick="addToManualTeam(${setNum}, ${p.id})">${p.name}</span>`;
+            });
+
+            if (availablePlayers.length === 0 && set.team1 && set.team2 && set.team1.length === 2 && set.team2.length === 2) {
+                html += '<span style="color: #28a745; font-weight: 600;">✓ All players assigned!</span>';
+            }
+
+            html += `</div></div>`;
+
+            // Show winner selection if teams are complete
+            if (set.team1 && set.team1.length === 2 && set.team2 && set.team2.length === 2) {
+                const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
+                const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+
+                const currentWinners = set.winners;
+                const team1Selected = currentWinners && 
+                    JSON.stringify([...currentWinners].sort()) === JSON.stringify([...set.team1].sort());
+                const team2Selected = currentWinners && 
+                    JSON.stringify([...currentWinners].sort()) === JSON.stringify([...set.team2].sort());
+
+                html += `
+                    <div style="margin-top: 15px;">
+                        <h5>Select Winning Team ${setNum === 3 ? '(Optional for Set 3)' : ''}:</h5>
+                        <div class="manual-winner-grid">
+                            <div class="manual-winner-option ${team1Selected ? 'selected' : ''}" 
+                                onclick="selectManualWinner(${setNum}, [${set.team1}])">
+                                Team 1: ${team1Players.join(' & ')}
+                            </div>
+                            <div class="manual-winner-option ${team2Selected ? 'selected' : ''}" 
+                                onclick="selectManualWinner(${setNum}, [${set.team2}])">
+                                Team 2: ${team2Players.join(' & ')}
+                            </div>
+                        </div>`;
+                
+                // For Set 3, add option to skip winner selection
+                if (setNum === 3) {
+                    html += `
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-secondary" onclick="selectManualWinner(${setNum}, null)" 
+                                style="font-size: 0.9em; padding: 8px 16px;">
+                                No Winner (Time Limit)
+                            </button>
+                        </div>`;
+                }
+                
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function addToManualTeam(setNum, playerId) {
+            const set = manualWeekData[`set${setNum}`];
+
+            // Initialize arrays if they don't exist
+            if (!set.team1) set.team1 = [];
+            if (!set.team2) set.team2 = [];
+
+            // Add to Team 1 if it has space
+            if (set.team1.length < 2) {
+                set.team1.push(playerId);
+            } 
+            // Otherwise add to Team 2 if it has space
+            else if (set.team2.length < 2) {
+                set.team2.push(playerId);
+            }
+
+            updateManualWinnerOptions(setNum);
+        }
+
+        function removeFromManualTeam(setNum, teamNumber, playerId) {
+            const set = manualWeekData[`set${setNum}`];
+
+            if (teamNumber === 1 && set.team1) {
+                set.team1 = set.team1.filter(id => id !== playerId);
+                if (set.team1.length === 0) set.team1 = null;
+            } else if (teamNumber === 2 && set.team2) {
+                set.team2 = set.team2.filter(id => id !== playerId);
+                if (set.team2.length === 0) set.team2 = null;
+            }
+
+            set.winners = null;
+            updateManualWinnerOptions(setNum);
+        }
+
+        function selectManualWinner(setNum, winners) {
+            manualWeekData[`set${setNum}`].winners = winners;
+            updateManualWinnerOptions(setNum);
+        }
+
+        async function saveManualWeek() {
+            const players = await loadPlayers();
+            const weekNumberInput = document.getElementById('manualWeekNumber').value;
+
+            // Validation
+            if (!weekNumberInput || weekNumberInput < 1) {
+                document.getElementById('manualStatus').innerHTML = 
+                    '<div class="status-warning">Please enter a valid week number!</div>';
+                return;
+            }
+
+            const weekNumber = parseInt(weekNumberInput);
+
+            // Check if all sets have bench and teams
+            for (let setNum = 1; setNum <= 3; setNum++) {
+                const set = manualWeekData[`set${setNum}`];
+                if (!set.bench) {
+                    document.getElementById('manualStatus').innerHTML = 
+                        `<div class="status-warning">Please select a bench player for Set ${setNum}!</div>`;
+                    return;
+                }
+                if (!set.team1 || set.team1.length !== 2 || !set.team2 || set.team2.length !== 2) {
+                    document.getElementById('manualStatus').innerHTML = 
+                        `<div class="status-warning">Please assign all players to teams for Set ${setNum}!</div>`;
+                    return;
+                }
+                // Sets 1 and 2 require winners, Set 3 is optional
+                if (setNum !== 3 && !set.winners) {
+                    document.getElementById('manualStatus').innerHTML = 
+                        `<div class="status-warning">Please select the winning team for Set ${setNum}!</div>`;
+                    return;
+                }
+            }
+
+            // Check if week already exists
+            const weeks = await getAllFromStore('weeks');
+            const existingWeek = weeks.find(w => w.weekNumber === weekNumber);
+            
+            if (existingWeek) {
+                if (!confirm(`Week ${weekNumber} already exists. Do you want to overwrite it?`)) {
+                    return;
+                }
+            }
+
+            // Create week object
+            const weekData = {
+                weekNumber: weekNumber,
+                sets: [
+                    { 
+                        number: 1, 
+                        bench: manualWeekData.set1.bench,
+                        team1: manualWeekData.set1.team1,
+                        team2: manualWeekData.set1.team2,
+                        winners: manualWeekData.set1.winners, 
+                        locked: true 
+                    },
+                    { 
+                        number: 2, 
+                        bench: manualWeekData.set2.bench,
+                        team1: manualWeekData.set2.team1,
+                        team2: manualWeekData.set2.team2,
+                        winners: manualWeekData.set2.winners, 
+                        locked: true 
+                    },
+                    { 
+                        number: 3, 
+                        bench: manualWeekData.set3.bench,
+                        team1: manualWeekData.set3.team1,
+                        team2: manualWeekData.set3.team2,
+                        winners: manualWeekData.set3.winners || null, // Allow null for Set 3
+                        locked: true 
+                    }
+                ],
+                completed: true,
+                manualEntry: true
+            };
+
+            // If overwriting, remove old statistics first
+            if (existingWeek) {
+                existingWeek.sets.forEach((set, index) => {
+                    const player = players.find(p => p.id === set.bench);
+                    if (player) {
+                        if (index === 0) player.set1Benches--;
+                        if (index === 1) player.set2Benches--;
+                        if (index === 2) player.set3Benches--;
+                        player.totalBenches--;
+                    }
+                });
+            }
+
+            // Update player statistics
+            weekData.sets.forEach((set, index) => {
+                const player = players.find(p => p.id === set.bench);
+                if (player) {
+                    if (index === 0) player.set1Benches++;
+                    if (index === 1) player.set2Benches++;
+                    if (index === 2) player.set3Benches++;
+                    player.totalBenches++;
+                }
+            });
+
+            // Save updated players
+            await saveToStore('players', { id: 'playerList', players: players });
+
+            // Save week
+            await saveToStore('weeks', weekData);
+
+            document.getElementById('manualStatus').innerHTML = 
+                `<div class="status-success">✓ Week ${weekNumber} saved successfully! Statistics updated.</div>`;
+
+            // Clear form
+            document.getElementById('manualWeekNumber').value = '';
+            manualWeekData = {
+                set1: { bench: null, team1: null, team2: null, winners: null },
+                set2: { bench: null, team1: null, team2: null, winners: null },
+                set3: { bench: null, team1: null, team2: null, winners: null }
+            };
+
+            // Reset dropdowns
+            for (let setNum = 1; setNum <= 3; setNum++) {
+                document.getElementById(`manualSet${setNum}Bench`).value = '';
+                document.getElementById(`manualSet${setNum}Winners`).innerHTML = 
+                    '<p style="color: #999; font-style: italic;">Select a bench player first</p>';
+            }
+
+            alert(`Week ${weekNumber} saved successfully!`);
+        }
+
+        // Data export/import
+        async function exportData() {
+            try {
+                console.log('Starting data export...');
+                
+                const players = await getFromStore('players', 'playerList');
+                const weeks = await getAllFromStore('weeks');
+                const currentWeek = await getFromStore('currentWeek', 'current');
+
+                console.log('Export data retrieved:', {
+                    players: players,
+                    weeksCount: weeks ? weeks.length : 0,
+                    hasCurrentWeek: !!currentWeek
+                });
+
+                // Create export data structure
+                const data = {
+                    version: 1,
+                    exportDate: new Date().toISOString(),
+                    players: players || null,
+                    weeks: weeks || [],
+                    currentWeek: currentWeek || null
+                };
+
+                // Show summary before export
+                const playerCount = players && players.players ? players.players.length : 0;
+                const weeksCount = weeks ? weeks.length : 0;
+                const hasCurrentWeek = !!currentWeek;
+
+                console.log('Exporting:', {
+                    playerCount: playerCount,
+                    completedWeeks: weeksCount,
+                    currentWeekInProgress: hasCurrentWeek
+                });
+
+                // Create and download the file
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tennis-rotation-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                // Show detailed success message
+                document.getElementById('dataStatus').innerHTML = 
+                    `<div class="status-success">
+                        <strong>✓ Data exported successfully!</strong><br>
+                        <small>
+                            Players: ${playerCount} | 
+                            Completed weeks: ${weeksCount} | 
+                            Current week: ${hasCurrentWeek ? 'Yes' : 'No'}
+                        </small>
+                    </div>`;
+                
+                console.log('Export completed successfully');
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                document.getElementById('dataStatus').innerHTML = 
+                    `<div class="status-warning">
+                        <strong>Error exporting data:</strong><br>
+                        ${error.message}
+                    </div>`;
+            }
+        }
+
+        async function importData(event) {
+            console.log('Import data triggered');
+            const file = event.target.files[0];
+            
+            if (!file) {
+                console.log('No file selected');
+                return;
+            }
+
+            console.log('File selected:', file.name, 'Size:', file.size, 'bytes');
+
+            // Show loading message
+            document.getElementById('dataStatus').innerHTML = 
+                '<div class="status-info">⏳ Importing data, please wait...</div>';
+
+            const reader = new FileReader();
+            
+            reader.onerror = () => {
+                console.error('FileReader error');
+                document.getElementById('dataStatus').innerHTML = 
+                    '<div class="status-warning">❌ Error reading file. Please try again.</div>';
+            };
+
+            reader.onload = async (e) => {
+                try {
+                    console.log('File read successfully, parsing JSON...');
+                    const data = JSON.parse(e.target.result);
+                    console.log('JSON parsed successfully:', data);
+
+                    // Validate the data structure
+                    if (!data.version) {
+                        throw new Error('Invalid backup file: missing version number');
+                    }
+
+                    let importedItems = {
+                        players: 0,
+                        weeks: 0,
+                        currentWeek: false
+                    };
+
+                    // Import players
+                    if (data.players) {
+                        console.log('Importing players...');
+                        await saveToStore('players', data.players);
+                        importedItems.players = data.players.players ? data.players.players.length : 0;
+                        console.log('Players imported:', importedItems.players);
+                    }
+
+                    // Import weeks
+                    if (data.weeks && data.weeks.length > 0) {
+                        console.log('Importing weeks...');
+                        await clearStore('weeks');
+                        for (let week of data.weeks) {
+                            await saveToStore('weeks', week);
+                            importedItems.weeks++;
+                        }
+                        console.log('Weeks imported:', importedItems.weeks);
+                    }
+
+                    // Import current week
+                    if (data.currentWeek) {
+                        console.log('Importing current week...');
+                        await saveToStore('currentWeek', data.currentWeek);
+                        importedItems.currentWeek = true;
+                        console.log('Current week imported');
+                    }
+
+                    // Reload players into the UI
+                    await loadPlayers();
+                    await displayCurrentWeek();
+                    
+                    // Show detailed success message
+                    document.getElementById('dataStatus').innerHTML = 
+                        `<div class="status-success">
+                            <strong>✓ Data imported successfully!</strong><br>
+                            <small>
+                                Players: ${importedItems.players} | 
+                                Weeks: ${importedItems.weeks} | 
+                                Current week: ${importedItems.currentWeek ? 'Yes' : 'No'}
+                            </small>
+                        </div>`;
+                    
+                    console.log('Import completed successfully');
+                    
+                    alert(`✓ Import successful!\n\nImported:\n• ${importedItems.players} players\n• ${importedItems.weeks} completed weeks\n• Current week: ${importedItems.currentWeek ? 'Yes' : 'No'}`);
+
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    document.getElementById('dataStatus').innerHTML = 
+                        `<div class="status-warning">
+                            <strong>❌ Error importing data:</strong><br>
+                            <small>${error.message}</small><br>
+                            <small>Please check the file format and try again.</small>
+                        </div>`;
+                    alert('Error importing data:\n\n' + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+            event.target.value = ''; // Clear the input so same file can be selected again
+        }
+
+        async function clearAllData() {
+            // First confirmation - explain what will be deleted
+            const firstConfirm = confirm(
+                '⚠️ DANGER: CLEAR ALL DATA ⚠️\n\n' +
+                'This will PERMANENTLY DELETE:\n' +
+                '✗ All 5 player names\n' +
+                '✗ All player statistics (bench counts)\n' +
+                '✗ All completed weeks (history)\n' +
+                '✗ Current week in progress\n' +
+                '✗ EVERYTHING in the app\n\n' +
+                '⚠️ Make sure you exported a backup first!\n\n' +
+                'Click OK to continue to final confirmation.'
+            );
+
+            if (!firstConfirm) {
+                document.getElementById('dataStatus').innerHTML = 
+                    '<div class="status-info">Clear all data cancelled.</div>';
+                return;
+            }
+
+            // Second confirmation - make them type to confirm
+            const secondConfirm = confirm(
+                '🚨 FINAL WARNING 🚨\n\n' +
+                'You are about to delete ALL DATA.\n' +
+                'This action CANNOT be undone!\n\n' +
+                'Have you exported your data as backup?\n\n' +
+                'Click OK to DELETE EVERYTHING\n' +
+                'Click Cancel to keep your data safe'
+            );
+
+            if (!secondConfirm) {
+                document.getElementById('dataStatus').innerHTML = 
+                    '<div class="status-info">Clear all data cancelled. Your data is safe.</div>';
+                return;
+            }
+
+            try {
+                // Clear all stores
+                await clearStore('players');
+                await clearStore('weeks');
+                await clearStore('currentWeek');
+
+                // Clear player input fields
+                for (let i = 1; i <= 5; i++) {
+                    const input = document.getElementById(`player${i}`);
+                    if (input) input.value = '';
+                }
+
+                document.getElementById('dataStatus').innerHTML = 
+                    '<div class="status-success">✓ All data cleared! The app has been reset.</div>';
+                
+                await displayCurrentWeek();
+                
+                alert('All data has been permanently deleted.\n\nYou can now set up new players in the Setup tab.');
+            } catch (error) {
+                console.error('Error clearing all data:', error);
+                document.getElementById('dataStatus').innerHTML = 
+                    '<div class="status-warning">Error clearing data: ' + error.message + '</div>';
+            }
+        }
+
+        // Initialize app
+        window.addEventListener('DOMContentLoaded', async () => {
+            console.log('App starting...');
+            
+            try {
+                // Show loading state
+                const setupTab = document.getElementById('setup');
+                if (setupTab) {
+                    const loadingDiv = document.createElement('div');
+                    loadingDiv.id = 'loadingMessage';
+                    loadingDiv.className = 'status-info';
+                    loadingDiv.style.margin = '20px';
+                    loadingDiv.textContent = 'Loading app...';
+                    setupTab.insertBefore(loadingDiv, setupTab.firstChild);
+                }
+
+                await initDB();
+                console.log('Database initialized');
+                
+                await loadPlayers();
+                console.log('Players loaded');
+                
+                await displayCurrentWeek();
+                console.log('Current week displayed');
+                
+                // Remove loading message
+                const loadingMsg = document.getElementById('loadingMessage');
+                if (loadingMsg) {
+                    loadingMsg.remove();
+                }
+                
+                console.log('App initialized successfully');
+            } catch (error) {
+                console.error('Initialization error:', error);
+                
+                // Show error to user
+                const setupTab = document.getElementById('setup');
+                if (setupTab) {
+                    const loadingMsg = document.getElementById('loadingMessage');
+                    if (loadingMsg) {
+                        loadingMsg.remove();
+                    }
+                    
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'status-warning';
+                    errorDiv.style.margin = '20px';
+                    errorDiv.innerHTML = `
+                        <strong>Error loading app</strong><br>
+                        <small>${error.message || 'Unknown error'}</small><br>
+                        <small>Try refreshing the page or clearing your browser cache.</small>
+                    `;
+                    setupTab.insertBefore(errorDiv, setupTab.firstChild);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
