@@ -742,16 +742,49 @@
             .stats-table tbody td:first-child {
                 position: sticky;
                 left: 0;
+                z-index: 2;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+            
+            .stats-table thead th:first-child {
+                background: #667eea;
+            }
+            
+            .stats-table tbody td:first-child {
                 background: white;
-                z-index: 1;
             }
 
             .stats-table thead th:nth-child(2),
             .stats-table tbody td:nth-child(2) {
                 position: sticky;
                 left: 50px;
+                z-index: 2;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+            
+            .stats-table thead th:nth-child(2) {
+                background: #667eea;
+            }
+            
+            .stats-table tbody td:nth-child(2) {
                 background: white;
-                z-index: 1;
+            }
+            
+            /* Ensure proper minimum widths for columns */
+            .stats-table th:first-child,
+            .stats-table td:first-child {
+                min-width: 50px;
+                width: 50px;
+            }
+            
+            .stats-table th:nth-child(2),
+            .stats-table td:nth-child(2) {
+                min-width: 100px;
+            }
+            
+            .stats-table th:nth-child(3),
+            .stats-table td:nth-child(3) {
+                min-width: 150px;
             }
         }
 
@@ -789,16 +822,16 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="setup">Setup</button>
+            <button class="nav-tab active" data-tab="stats">Statistics</button>
             <button class="nav-tab" data-tab="week">Current Week</button>
-            <button class="nav-tab" data-tab="manual">Add Historical Data</button>
-            <button class="nav-tab" data-tab="stats">Statistics</button>
             <button class="nav-tab" data-tab="history">History</button>
+            <button class="nav-tab" data-tab="setup">Setup</button>
+            <button class="nav-tab" data-tab="manual">Add Historical Data</button>
             <button class="nav-tab" data-tab="data">Data</button>
         </div>
 
         <!-- Setup Tab -->
-        <div id="setup" class="tab-content active">
+        <div id="setup" class="tab-content">
             <div class="section">
                 <h2 class="section-title">Player Setup</h2>
                 <div class="player-input-group">
@@ -911,7 +944,7 @@
         </div>
 
         <!-- Statistics Tab -->
-        <div id="stats" class="tab-content">
+        <div id="stats" class="tab-content active">
             <div class="section">
                 <h2 class="section-title">Bench Statistics</h2>
                 <div id="statsContainer"></div>
