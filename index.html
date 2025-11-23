@@ -2176,8 +2176,8 @@
             }
         }
 
-        async function clearSet(setNumber) {
-            // Create custom confirmation dialog to bypass sandbox restrictions
+        // Custom confirmation dialog to bypass sandbox restrictions
+        async function showCustomConfirm(title, message, confirmText = 'Yes, Continue', cancelText = 'Cancel', isDanger = false) {
             const confirmDialog = document.createElement('div');
             confirmDialog.style.cssText = `
                 position: fixed;
@@ -2192,24 +2192,20 @@
                 z-index: 10000;
             `;
             
+            const dangerColor = isDanger ? '#dc3545' : '#667eea';
+            
             confirmDialog.innerHTML = `
                 <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                    <h3 style="color: #dc3545; margin-top: 0;">⚠️ WARNING: Clear Set ${setNumber}?</h3>
-                    <p style="margin: 15px 0; line-height: 1.6;">
-                        This will delete all data for Set ${setNumber}:<br><br>
-                        • Benched player<br>
-                        • Team assignments<br>
-                        • Winner selection<br>
-                        • Locked status<br><br>
-                        You will need to re-enter all information for this set.
-                    </p>
-                    <p style="margin: 15px 0; font-weight: 600;">Are you sure you want to continue?</p>
+                    <h3 style="color: ${dangerColor}; margin-top: 0;">${title}</h3>
+                    <div style="margin: 15px 0; line-height: 1.6; white-space: pre-line;">
+                        ${message}
+                    </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button id="confirmClearYes" style="flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
-                            Yes, Clear Set
+                        <button id="customConfirmYes" style="flex: 1; padding: 12px; background: ${dangerColor}; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            ${confirmText}
                         </button>
-                        <button id="confirmClearNo" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
-                            Cancel
+                        <button id="customConfirmNo" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            ${cancelText}
                         </button>
                     </div>
                 </div>
@@ -2217,17 +2213,37 @@
             
             document.body.appendChild(confirmDialog);
             
-            // Wait for user response
-            const userResponse = await new Promise((resolve) => {
-                document.getElementById('confirmClearYes').onclick = () => {
+            return new Promise((resolve) => {
+                document.getElementById('customConfirmYes').onclick = () => {
                     document.body.removeChild(confirmDialog);
                     resolve(true);
                 };
-                document.getElementById('confirmClearNo').onclick = () => {
+                document.getElementById('customConfirmNo').onclick = () => {
                     document.body.removeChild(confirmDialog);
                     resolve(false);
                 };
             });
+        }
+
+        async function clearSet(setNumber) {
+            const message = `This will delete all data for Set ${setNumber}:
+
+• Benched player
+• Team assignments
+• Winner selection
+• Locked status
+
+You will need to re-enter all information for this set.
+
+Are you sure you want to continue?`;
+
+            const userResponse = await showCustomConfirm(
+                `⚠️ WARNING: Clear Set ${setNumber}?`,
+                message,
+                'Yes, Clear Set',
+                'Cancel',
+                true
+            );
 
             if (!userResponse) {
                 return;
@@ -2261,7 +2277,7 @@
         }
 
         async function resetCurrentWeekNoConfirm() {
-            console.log('resetCurrentWeekNoConfirm called - NO CONFIRMATION');
+            console.log('resetCurrentWeek called with confirmation');
             try {
                 const currentWeek = await getFromStore('currentWeek', 'current');
                 console.log('Current week data:', currentWeek);
@@ -2271,8 +2287,32 @@
                     return;
                 }
 
-                // Clear the current week data WITHOUT confirmation
-                console.log('Clearing current week (no confirmation)...');
+                const message = `This will DELETE all current data for Week ${currentWeek.weekNumber}:
+
+• All bench selections
+• All team assignments  
+• All winner selections
+• All set progress
+
+The week will be completely reset and you'll need to start over.
+
+Are you sure you want to continue?`;
+
+                const confirmed = await showCustomConfirm(
+                    `⚠️ RESET WEEK ${currentWeek.weekNumber}?`,
+                    message,
+                    'Yes, Clear & Restart',
+                    'Cancel',
+                    true
+                );
+
+                if (!confirmed) {
+                    console.log('Week reset cancelled by user');
+                    return;
+                }
+
+                // Clear the current week data
+                console.log('Clearing current week...');
                 await clearStore('currentWeek');
                 console.log('Current week cleared successfully');
 
@@ -2280,8 +2320,6 @@
                 console.log('Refreshing display...');
                 await displayCurrentWeek();
                 console.log('Display refreshed');
-                
-                // Show brief success message
                 console.log('Week reset completed successfully');
 
             } catch (error) {
@@ -3020,16 +3058,24 @@
 
         async function clearAllData() {
             // First confirmation - explain what will be deleted
-            const firstConfirm = confirm(
-                '⚠️ DANGER: CLEAR ALL DATA ⚠️\n\n' +
-                'This will PERMANENTLY DELETE:\n' +
-                '✗ All 5 player names\n' +
-                '✗ All player statistics (bench counts)\n' +
-                '✗ All completed weeks (history)\n' +
-                '✗ Current week in progress\n' +
-                '✗ EVERYTHING in the app\n\n' +
-                '⚠️ Make sure you exported a backup first!\n\n' +
-                'Click OK to continue to final confirmation.'
+            const firstMessage = `This will PERMANENTLY DELETE:
+
+✗ All 5 player names
+✗ All player statistics (bench counts)
+✗ All completed weeks (history)
+✗ Current week in progress
+✗ EVERYTHING in the app
+
+⚠️ Make sure you exported a backup first!
+
+Click to continue to final confirmation.`;
+
+            const firstConfirm = await showCustomConfirm(
+                '⚠️ DANGER: CLEAR ALL DATA ⚠️',
+                firstMessage,
+                'Continue to Final Warning',
+                'Cancel',
+                true
             );
 
             if (!firstConfirm) {
@@ -3038,14 +3084,21 @@
                 return;
             }
 
-            // Second confirmation - make them type to confirm
-            const secondConfirm = confirm(
-                '🚨 FINAL WARNING 🚨\n\n' +
-                'You are about to delete ALL DATA.\n' +
-                'This action CANNOT be undone!\n\n' +
-                'Have you exported your data as backup?\n\n' +
-                'Click OK to DELETE EVERYTHING\n' +
-                'Click Cancel to keep your data safe'
+            // Second confirmation - final warning
+            const secondMessage = `You are about to delete ALL DATA.
+This action CANNOT be undone!
+
+Have you exported your data as backup?
+
+Click to DELETE EVERYTHING
+Click Cancel to keep your data safe`;
+
+            const secondConfirm = await showCustomConfirm(
+                '🚨 FINAL WARNING 🚨',
+                secondMessage,
+                'DELETE EVERYTHING',
+                'Keep My Data Safe',
+                true
             );
 
             if (!secondConfirm) {
