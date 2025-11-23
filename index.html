@@ -884,14 +884,6 @@
                 font-size: 14px;
             }
 
-            .nav-tab .tab-text {
-                display: none;
-            }
-
-            .nav-tab.active .tab-text {
-                display: inline;
-            }
-
             .tab-content {
                 padding: 15px;
             }
@@ -2023,6 +2015,13 @@
                     </button>`;
                 }
 
+                // Add Clear Set button if any data has been entered for this set
+                if (set.bench !== null || set.team1 !== null || set.team2 !== null || set.winners !== null || set.locked) {
+                    html += `<button class="btn btn-danger" onclick="clearSet(${set.number})" style="margin-left: 10px; font-size: 13px;">
+                        🗑️ Clear Set ${set.number}
+                    </button>`;
+                }
+
                 html += `</div>`;
             }
 
@@ -2174,6 +2173,90 @@
                 await displayCurrentWeek();
             } catch (error) {
                 console.error('Error locking set:', error);
+            }
+        }
+
+        async function clearSet(setNumber) {
+            // Create custom confirmation dialog to bypass sandbox restrictions
+            const confirmDialog = document.createElement('div');
+            confirmDialog.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            confirmDialog.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                    <h3 style="color: #dc3545; margin-top: 0;">⚠️ WARNING: Clear Set ${setNumber}?</h3>
+                    <p style="margin: 15px 0; line-height: 1.6;">
+                        This will delete all data for Set ${setNumber}:<br><br>
+                        • Benched player<br>
+                        • Team assignments<br>
+                        • Winner selection<br>
+                        • Locked status<br><br>
+                        You will need to re-enter all information for this set.
+                    </p>
+                    <p style="margin: 15px 0; font-weight: 600;">Are you sure you want to continue?</p>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="confirmClearYes" style="flex: 1; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            Yes, Clear Set
+                        </button>
+                        <button id="confirmClearNo" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(confirmDialog);
+            
+            // Wait for user response
+            const userResponse = await new Promise((resolve) => {
+                document.getElementById('confirmClearYes').onclick = () => {
+                    document.body.removeChild(confirmDialog);
+                    resolve(true);
+                };
+                document.getElementById('confirmClearNo').onclick = () => {
+                    document.body.removeChild(confirmDialog);
+                    resolve(false);
+                };
+            });
+
+            if (!userResponse) {
+                return;
+            }
+
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) {
+                    alert('No active week found.');
+                    return;
+                }
+
+                // Reset the set to default state
+                currentWeek.sets[setNumber - 1] = {
+                    number: setNumber,
+                    bench: null,
+                    team1: null,
+                    team2: null,
+                    winners: null,
+                    locked: false
+                };
+
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+                
+                console.log(`Set ${setNumber} cleared successfully`);
+            } catch (error) {
+                console.error('Error clearing set:', error);
+                alert('Error clearing set: ' + error.message);
             }
         }
 
