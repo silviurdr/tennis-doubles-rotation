@@ -18,6 +18,7 @@
             padding: 0;
             margin: 0;
             font-size: 13px;
+            overflow-y: scroll;
         }
 
         .container {
@@ -51,33 +52,48 @@
         .nav-tabs {
             display: flex;
             background: white;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
             overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0 10px;
+            scrollbar-gutter: stable;
         }
 
         .nav-tab {
-            flex: 1;
-            padding: 12px 15px;
+            flex: 0 0 auto;
+            padding: 14px 20px;
             text-align: center;
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #666;
+            color: #999;
             transition: all 0.2s;
-            border-bottom: 3px solid transparent;
+            border-bottom: 2px solid transparent;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-tab .tab-icon {
+            font-size: 16px;
+            opacity: 1;
+            transition: all 0.2s;
+            color: inherit;
         }
 
         .nav-tab:hover {
             background: #f8f9fa;
-            color: #333;
+            color: #666;
         }
 
         .nav-tab.active {
             color: #667eea;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 2px solid #667eea;
             background: white;
         }
 
@@ -859,7 +875,21 @@
 
             .nav-tab {
                 font-size: 11px;
-                padding: 10px 5px;
+                padding: 12px 12px;
+                white-space: nowrap;
+                gap: 4px;
+            }
+
+            .nav-tab .tab-icon {
+                font-size: 14px;
+            }
+
+            .nav-tab .tab-text {
+                display: none;
+            }
+
+            .nav-tab.active .tab-text {
+                display: inline;
             }
 
             .tab-content {
@@ -1053,12 +1083,30 @@
         </div>
 
         <div class="nav-tabs">
-            <button class="nav-tab active" data-tab="stats">Statistics</button>
-            <button class="nav-tab" data-tab="week">Current Week</button>
-            <button class="nav-tab" data-tab="history">History</button>
-            <button class="nav-tab" data-tab="setup">Setup</button>
-            <button class="nav-tab" data-tab="manual">Add Historical Data</button>
-            <button class="nav-tab" data-tab="data">Data</button>
+            <button class="nav-tab active" data-tab="stats">
+                <span class="tab-icon">▤</span>
+                <span class="tab-text">Statistics</span>
+            </button>
+            <button class="nav-tab" data-tab="week">
+                <span class="tab-icon">◉</span>
+                <span class="tab-text">Current Week</span>
+            </button>
+            <button class="nav-tab" data-tab="history">
+                <span class="tab-icon">☰</span>
+                <span class="tab-text">History</span>
+            </button>
+            <button class="nav-tab" data-tab="setup">
+                <span class="tab-icon">⚙</span>
+                <span class="tab-text">Setup</span>
+            </button>
+            <button class="nav-tab" data-tab="manual">
+                <span class="tab-icon">✎</span>
+                <span class="tab-text">Historical Data</span>
+            </button>
+            <button class="nav-tab" data-tab="data">
+                <span class="tab-icon">◫</span>
+                <span class="tab-text">Data</span>
+            </button>
         </div>
 
         <!-- Setup Tab -->
