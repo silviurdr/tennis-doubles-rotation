@@ -17,6 +17,7 @@
             min-height: 100vh;
             padding: 0;
             margin: 0;
+            font-size: 13px;
         }
 
         .container {
@@ -35,7 +36,7 @@
         }
 
         .header h1 {
-            font-size: 1.8em;
+            font-size: 22px;
             margin-bottom: 5px;
             color: #667eea;
             font-weight: 700;
@@ -43,7 +44,7 @@
 
         .header p {
             opacity: 0.7;
-            font-size: 0.95em;
+            font-size: 13px;
             color: #666;
         }
 
@@ -61,7 +62,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 13px;
             font-weight: 600;
             color: #666;
             transition: all 0.2s;
@@ -95,7 +96,7 @@
         }
 
         .section-title {
-            font-size: 1.2em;
+            font-size: 16px;
             color: #333;
             margin-bottom: 15px;
             padding-bottom: 8px;
@@ -119,7 +120,7 @@
             width: 80px;
             font-weight: 600;
             color: #555;
-            font-size: 1em;
+            font-size: 13px;
         }
 
         .player-input input {
@@ -127,7 +128,7 @@
             padding: 10px 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 13px;
             transition: border-color 0.3s;
         }
 
@@ -136,11 +137,18 @@
             border-color: #667eea;
         }
 
+        .player-input input:disabled {
+            background-color: #f8f9fa;
+            color: #495057;
+            cursor: not-allowed;
+            border-color: #e9ecef;
+        }
+
         .btn {
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
-            font-size: 1em;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -161,23 +169,23 @@
         }
 
         .btn-success {
-            background: #28a745;
+            background: #5568d3;
             color: white;
         }
 
         .btn-success:hover {
-            background: #218838;
+            background: #4557bd;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 5px 15px rgba(85, 104, 211, 0.4);
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: #e85555;
             color: white;
         }
 
         .btn-danger:hover {
-            background: #c82333;
+            background: #dc3545;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
         }
@@ -209,7 +217,7 @@
             background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #6c757d;
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             transition: all 0.3s;
         }
@@ -219,14 +227,14 @@
         }
 
         .set-card h3 {
-            color: #667eea;
+            color: #495057;
             margin-bottom: 15px;
-            font-size: 1.3em;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .set-card h4 {
-            font-size: 1.05em;
+            font-size: 14px;
             margin-bottom: 10px;
             color: #333;
             font-weight: 600;
@@ -251,7 +259,7 @@
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
-            font-size: 1em;
+            font-size: 13px;
             font-weight: 500;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
@@ -273,60 +281,60 @@
         }
 
         .bench-option.rank-1 {
-            border-color: #dc3545;
-            background: #ff9999;
+            border-color: #667eea;
+            background: #e8ecff;
         }
 
         .bench-option.rank-1.selected {
-            background: #dc3545;
+            background: #667eea;
             color: white;
         }
 
         .bench-option.rank-2 {
-            border-color: #e85555;
-            background: #ffb0b0;
+            border-color: #91a0f5;
+            background: #f3f5ff;
         }
 
         .bench-option.rank-2.selected {
-            background: #ff3d3d;
+            background: #91a0f5;
             color: white;
         }
 
         .bench-option.rank-3 {
-            border-color: #ef7373;
-            background: #ffc2c2;
+            border-color: #b0b0b0;
+            background: #f5f5f5;
         }
 
         .bench-option.rank-3.selected {
-            background: #ff5c5c;
+            background: #808080;
             color: white;
         }
 
         .bench-option.rank-4 {
-            border-color: #f59494;
-            background: #ffd4d4;
+            border-color: #c0c0c0;
+            background: #f8f8f8;
         }
 
         .bench-option.rank-4.selected {
-            background: #ff7a7a;
+            background: #999999;
             color: white;
         }
 
         .bench-option.rank-5 {
-            border-color: #f8b4b4;
-            background: #ffe5e5;
+            border-color: #d0d0d0;
+            background: #fafafa;
         }
 
         .bench-option.rank-5.selected {
-            background: #ff9999;
+            background: #b0b0b0;
             color: white;
         }
 
         .rank-badge {
             display: inline-block;
-            background: #ef7373;
+            background: #808080;
             color: white;
-            font-size: 0.75em;
+            font-size: 10px;
             font-weight: bold;
             padding: 2px 8px;
             border-radius: 10px;
@@ -334,28 +342,28 @@
         }
 
         .rank-1 .rank-badge {
-            background: #dc3545;
+            background: #667eea;
             color: white;
         }
 
         .rank-2 .rank-badge {
-            background: #e85555;
+            background: #91a0f5;
             color: white;
         }
 
         .rank-3 .rank-badge {
-            background: #ef7373;
+            background: #808080;
             color: white;
         }
 
         .rank-4 .rank-badge {
-            background: #f59494;
+            background: #999999;
             color: white;
         }
 
         .rank-5 .rank-badge {
-            background: #f8b4b4;
-            color: #333;
+            background: #b0b0b0;
+            color: white;
         }
 
         .bench-option.selected .rank-badge {
@@ -373,6 +381,7 @@
         .court-display h4 {
             color: #555;
             margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .players-on-court {
@@ -409,23 +418,25 @@
             cursor: pointer;
             transition: all 0.3s;
             text-align: center;
+            font-size: 13px;
         }
 
         .winner-option:hover {
-            border-color: #28a745;
+            border-color: #667eea;
         }
 
         .winner-option.selected {
-            background: #28a745;
+            background: #667eea;
             color: white;
-            border-color: #28a745;
+            border-color: #667eea;
         }
 
         .status-message {
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin: 15px 0;
-            font-size: 1em;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .status-info {
@@ -435,10 +446,11 @@
         }
 
         .status-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            font-weight: 500;
+            background: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+            font-weight: 600;
+            font-size: 15px;
         }
 
         .status-warning {
@@ -461,24 +473,26 @@
             border-spacing: 0;
             margin-top: 0;
             background: white;
-            font-size: 1em;
+            font-size: 13px;
             table-layout: fixed;
         }
 
         .stats-table th,
         .stats-table td {
-            padding: 12px 16px;
+            padding: 8px 10px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            color: #666;
         }
 
         .stats-table th {
             background: #f5f5f5;
             color: #666;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -508,57 +522,49 @@
 
         .stats-table td:nth-child(1) {
             font-size: 0.95em;
-            position: relative;
         }
 
         /* FlashScore-style blue badges for rank numbers */
-        .stats-table tbody tr:nth-child(1) td:nth-child(1),
-        .stats-table tbody tr:nth-child(2) td:nth-child(1),
-        .stats-table tbody tr:nth-child(3) td:nth-child(1),
-        .stats-table tbody tr:nth-child(4) td:nth-child(1),
-        .stats-table tbody tr:nth-child(5) td:nth-child(1) {
-            color: white !important;
+        .stats-table .rank-number {
+            display: inline-block;
+            min-width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
             font-weight: 700;
-            position: relative;
-            z-index: 1;
+            font-size: 10px;
+            border-radius: 3px;
         }
 
-        .stats-table tbody tr:nth-child(1) td:nth-child(1)::before,
-        .stats-table tbody tr:nth-child(2) td:nth-child(1)::before,
-        .stats-table tbody tr:nth-child(3) td:nth-child(1)::before,
-        .stats-table tbody tr:nth-child(4) td:nth-child(1)::before,
-        .stats-table tbody tr:nth-child(5) td:nth-child(1)::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 28px;
-            height: 28px;
-            background: #1e5a96;
-            border-radius: 4px;
-            z-index: 0;
+        /* Add dot after the number */
+        .stats-table .rank-number::after {
+            content: '.';
         }
 
-        /* Different shades for top 5 */
-        .stats-table tbody tr:nth-child(1) td:nth-child(1)::before {
-            background: #1e5a96;
+        /* Blue badges for top 5 positions - purple/blue gradient from dark to light */
+        .stats-table tbody tr:nth-child(1) .rank-number {
+            background: #5568d3;
+            color: white;
         }
 
-        .stats-table tbody tr:nth-child(2) td:nth-child(1)::before {
-            background: #2567a8;
+        .stats-table tbody tr:nth-child(2) .rank-number {
+            background: #667eea;
+            color: white;
         }
 
-        .stats-table tbody tr:nth-child(3) td:nth-child(1)::before {
-            background: #2d74b9;
+        .stats-table tbody tr:nth-child(3) .rank-number {
+            background: #7b8ff0;
+            color: white;
         }
 
-        .stats-table tbody tr:nth-child(4) td:nth-child(1)::before {
-            background: #3581cb;
+        .stats-table tbody tr:nth-child(4) .rank-number {
+            background: #91a0f5;
+            color: white;
         }
 
-        .stats-table tbody tr:nth-child(5) td:nth-child(1)::before {
-            background: #3d8edd;
+        .stats-table tbody tr:nth-child(5) .rank-number {
+            background: #a7b1fa;
+            color: white;
         }
 
         /* FlashScore-style sticky PLAYER column */
@@ -568,7 +574,7 @@
             min-width: 120px;
             text-align: left;
             padding-left: 15px;
-            font-weight: 500;
+            font-weight: 400;
             position: sticky;
             left: 0;
             z-index: 5;
@@ -610,16 +616,16 @@
             color: #333;
         }
 
-        /* Points column - highlighted */
+        /* Points column - darker black with semi-bold like FlashScore */
         .stats-table th:nth-child(7),
         .stats-table td:nth-child(7) {
             width: 20%;
         }
 
         .stats-table td:nth-child(7) {
-            font-weight: 700;
-            color: #667eea;
-            font-size: 1.1em;
+            font-weight: 600;
+            color: #000;
+            font-size: 13px;
         }
 
         .week-card {
@@ -639,7 +645,7 @@
         .week-card h3 {
             color: #667eea;
             margin-bottom: 15px;
-            font-size: 1.3em;
+            font-size: 18px;
             font-weight: 600;
         }
 
@@ -663,11 +669,11 @@
         }
 
         .winner-badge {
-            background: #28a745;
+            background: #667eea;
             color: white;
             padding: 4px 12px;
             border-radius: 12px;
-            font-size: 0.9em;
+            font-size: 12px;
         }
 
         .export-import-section {
@@ -753,16 +759,16 @@
         }
 
         .team-box {
-            border: 2px solid #667eea;
+            border: 2px solid #6c757d;
             border-radius: 8px;
             padding: 15px;
-            background: #f8f9ff;
+            background: #f8f9fa;
         }
 
         .team-box h5 {
-            color: #667eea;
+            color: #495057;
             margin-bottom: 10px;
-            font-size: 1em;
+            font-size: 14px;
         }
 
         .player-dropzone {
@@ -778,7 +784,7 @@
 
         .player-dropzone.has-players {
             border-style: solid;
-            border-color: #667eea;
+            border-color: #6c757d;
         }
 
         .available-players {
@@ -802,6 +808,7 @@
             margin: 5px;
             user-select: none;
             transition: all 0.2s;
+            font-size: 13px;
         }
 
         .player-draggable:hover {
@@ -833,7 +840,7 @@
         }
 
         .no-data-icon {
-            font-size: 3em;
+            font-size: 48px;
             margin-bottom: 15px;
         }
 
@@ -843,15 +850,15 @@
             }
 
             .header h1 {
-                font-size: 1.5em;
+                font-size: 20px;
             }
 
             .header p {
-                font-size: 0.9em;
+                font-size: 12px;
             }
 
             .nav-tab {
-                font-size: 0.75em;
+                font-size: 11px;
                 padding: 10px 5px;
             }
 
@@ -937,16 +944,6 @@
             .stats-table th:nth-child(1),
             .stats-table td:nth-child(1) {
                 min-width: 40px !important;
-            }
-
-            /* Blue badges for rank numbers on mobile */
-            .stats-table tbody tr:nth-child(1) td:nth-child(1)::before,
-            .stats-table tbody tr:nth-child(2) td:nth-child(1)::before,
-            .stats-table tbody tr:nth-child(3) td:nth-child(1)::before,
-            .stats-table tbody tr:nth-child(4) td:nth-child(1)::before,
-            .stats-table tbody tr:nth-child(5) td:nth-child(1)::before {
-                width: 24px !important;
-                height: 24px !important;
             }
 
             /* Enhanced sticky PLAYER column for mobile */
@@ -1068,29 +1065,35 @@
         <div id="setup" class="tab-content">
             <div class="section">
                 <h2 class="section-title">Player Setup</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="toggleEditPlayers()" id="editPlayersBtn">✏️ Edit Players</button>
+                    <button class="btn btn-success" onclick="savePlayers()" id="savePlayersBtn" style="display: none;">💾 Save Players</button>
+                    <button class="btn btn-secondary" onclick="cancelEditPlayers()" id="cancelEditBtn" style="display: none;">Cancel</button>
+                </div>
+                
                 <div class="player-input-group">
                     <div class="player-input">
                         <label>Player 1:</label>
-                        <input type="text" id="player1" placeholder="Enter name">
+                        <input type="text" id="player1" placeholder="Enter name" disabled>
                     </div>
                     <div class="player-input">
                         <label>Player 2:</label>
-                        <input type="text" id="player2" placeholder="Enter name">
+                        <input type="text" id="player2" placeholder="Enter name" disabled>
                     </div>
                     <div class="player-input">
                         <label>Player 3:</label>
-                        <input type="text" id="player3" placeholder="Enter name">
+                        <input type="text" id="player3" placeholder="Enter name" disabled>
                     </div>
                     <div class="player-input">
                         <label>Player 4:</label>
-                        <input type="text" id="player4" placeholder="Enter name">
+                        <input type="text" id="player4" placeholder="Enter name" disabled>
                     </div>
                     <div class="player-input">
                         <label>Player 5:</label>
-                        <input type="text" id="player5" placeholder="Enter name">
+                        <input type="text" id="player5" placeholder="Enter name" disabled>
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="savePlayers()">Save Players</button>
             </div>
         </div>
 
@@ -1098,11 +1101,16 @@
         <div id="week" class="tab-content">
             <div class="section">
                 <h2 class="section-title">Weekly Match</h2>
-                <div id="weekStatus"></div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <button class="btn btn-primary" onclick="startNewWeek()" id="newWeekBtn">Start New Week</button>
-                    <button class="btn btn-danger" onclick="resetCurrentWeekNoConfirm()" id="resetWeekBtn" style="display: none; z-index: 10; position: relative;">🗑️ Clear & Restart Week</button>
+                
+                <!-- Week Status Card -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #667eea;">
+                    <div id="weekStatus"></div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                        <button class="btn btn-primary" onclick="startNewWeek()" id="newWeekBtn">Start New Week</button>
+                        <button class="btn btn-danger" onclick="resetCurrentWeekNoConfirm()" id="resetWeekBtn" style="display: none;">🗑️ Clear & Restart Week</button>
+                    </div>
                 </div>
+                
                 <div id="setsContainer"></div>
             </div>
         </div>
@@ -1536,6 +1544,38 @@
         });
 
         // Player management
+        // Player editing functions
+        let originalPlayerValues = [];
+
+        function toggleEditPlayers() {
+            // Store original values
+            originalPlayerValues = [];
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`player${i}`);
+                originalPlayerValues.push(input.value);
+                input.disabled = false;
+            }
+
+            // Toggle buttons
+            document.getElementById('editPlayersBtn').style.display = 'none';
+            document.getElementById('savePlayersBtn').style.display = 'inline-block';
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        }
+
+        function cancelEditPlayers() {
+            // Restore original values
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`player${i}`);
+                input.value = originalPlayerValues[i - 1];
+                input.disabled = true;
+            }
+
+            // Toggle buttons back
+            document.getElementById('editPlayersBtn').style.display = 'inline-block';
+            document.getElementById('savePlayersBtn').style.display = 'none';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+
         async function savePlayers() {
             try {
                 const players = [];
@@ -1556,6 +1596,15 @@
                 }
 
                 await saveToStore('players', { id: 'playerList', players: players });
+                
+                // Disable inputs and toggle buttons
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`player${i}`).disabled = true;
+                }
+                document.getElementById('editPlayersBtn').style.display = 'inline-block';
+                document.getElementById('savePlayersBtn').style.display = 'none';
+                document.getElementById('cancelEditBtn').style.display = 'none';
+                
                 alert('Players saved successfully!');
             } catch (error) {
                 console.error('Error saving players:', error);
@@ -1868,12 +1917,12 @@
                         html += `<div class="court-display">
                             <h4>Teams on Court:</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
-                                <div style="padding: 10px; background: #e7f3ff; border-radius: 5px; border: 2px solid #667eea;">
-                                    <strong>Team 1:</strong><br>
+                                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px; border: 2px solid #6c757d;">
+                                    <strong style="color: #667eea;">Team 1:</strong><br>
                                     ${team1Players.join(' & ')}
                                 </div>
-                                <div style="padding: 10px; background: #e7f3ff; border-radius: 5px; border: 2px solid #667eea;">
-                                    <strong>Team 2:</strong><br>
+                                <div style="padding: 10px; background: #f8f9fa; border-radius: 5px; border: 2px solid #6c757d;">
+                                    <strong style="color: #667eea;">Team 2:</strong><br>
                                     ${team2Players.join(' & ')}
                                 </div>
                             </div>
@@ -1914,8 +1963,9 @@
                         if (set.locked) {
                             const winnerTeamNum = set.winners ? (JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team1].sort()) ? 1 : 2) : null;
                             const winnerNames = winnerTeamNum ? (winnerTeamNum === 1 ? team1Players.join(' & ') : team2Players.join(' & ')) : null;
-                            html += `<div class="status-success">
-                                ✓ Set locked${winnerNames ? ` - Winners: Team ${winnerTeamNum} (${winnerNames})` : ' - No winner (time limit)'}
+                            const benchedPlayerName = set.bench !== null ? players.find(p => p.id === set.bench).name : 'None';
+                            html += `<div style="background: #f8f9ff; color: #495057; border: 1px solid #c7d2fe; padding: 15px 20px; border-radius: 8px; margin: 0; font-size: 14px; font-weight: 500;">
+                                ✓ Set locked${winnerNames ? ` - <span style="color: #667eea; font-weight: 600;">Winners: Team ${winnerTeamNum} (${winnerNames})</span>` : ' - No winner (time limit)'} | <span style="color: #6c757d;">Benched: ${benchedPlayerName}</span>
                             </div>`;
                         }
                     }
@@ -2256,12 +2306,12 @@
                         pointsDisplay = `<span style="color: #999;">0</span>`;
                     } else {
                         const weightedScoreDisplay = player.weightedScore.toFixed(1);
-                        pointsDisplay = `<strong style="color: #667eea;">${weightedScoreDisplay}</strong>`;
+                        pointsDisplay = `<span style="color: #000; font-weight: 600;">${weightedScoreDisplay}</span>`;
                     }
 
                     html += `<tr>
-                        <td>${rank}</td>
-                        <td><strong>${player.name}</strong></td>
+                        <td><span class="rank-number">${rank}</span></td>
+                        <td>${player.name}</td>
                         <td>${player.set1Benches}</td>
                         <td>${player.set2Benches}</td>
                         <td>${player.set3Benches}</td>
