@@ -1070,84 +1070,68 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎾 Tennis Rotation Manager</h1>
-            <p>Fair doubles rotation for 5 players</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 data-translate="app_title">🎾 Tennis Rotation Manager</h1>
+                    <p data-translate="app_subtitle">Fair doubles rotation for 5 players</p>
+                </div>
+                <div id="langToggle" style="display: flex; align-items: center; gap: 8px; background: #2d3748; padding: 6px; border-radius: 25px; cursor: pointer;">
+                    <span class="lang-option" data-lang="en" style="padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; color: #fff;">EN</span>
+                    <span class="lang-option" data-lang="ro" style="padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; color: #a0aec0;">RO</span>
+                </div>
+            </div>
         </div>
 
         <div class="nav-tabs">
             <button class="nav-tab active" data-tab="stats">
                 <span class="tab-icon">▤</span>
-                <span class="tab-text">Statistics</span>
+                <span class="tab-text" data-translate="tab_stats">Statistics</span>
             </button>
             <button class="nav-tab" data-tab="week">
                 <span class="tab-icon">◉</span>
-                <span class="tab-text">Current Week</span>
+                <span class="tab-text" data-translate="tab_week">Current Week</span>
+            </button>
+            <button class="nav-tab" data-tab="faq">
+                <span class="tab-icon">?</span>
+                <span class="tab-text" data-translate="tab_faq">FAQ</span>
             </button>
             <button class="nav-tab" data-tab="history">
                 <span class="tab-icon">☰</span>
-                <span class="tab-text">History</span>
+                <span class="tab-text" data-translate="tab_history">History</span>
             </button>
             <button class="nav-tab" data-tab="setup">
                 <span class="tab-icon">⚙</span>
-                <span class="tab-text">Setup</span>
+                <span class="tab-text" data-translate="tab_setup">Setup</span>
             </button>
             <button class="nav-tab" data-tab="manual">
                 <span class="tab-icon">✎</span>
-                <span class="tab-text">Historical Data</span>
+                <span class="tab-text" data-translate="tab_manual">Historical Data</span>
             </button>
             <button class="nav-tab" data-tab="data">
                 <span class="tab-icon">◫</span>
-                <span class="tab-text">Data</span>
+                <span class="tab-text" data-translate="tab_data">Data</span>
             </button>
         </div>
 
         <!-- Setup Tab -->
         <div id="setup" class="tab-content">
             <div class="section">
-                <h2 class="section-title">Player Setup</h2>
-                
-                <div style="margin-bottom: 20px;">
-                    <button class="btn btn-primary" onclick="toggleEditPlayers()" id="editPlayersBtn">✏️ Edit Players</button>
-                    <button class="btn btn-success" onclick="savePlayers()" id="savePlayersBtn" style="display: none;">💾 Save Players</button>
-                    <button class="btn btn-secondary" onclick="cancelEditPlayers()" id="cancelEditBtn" style="display: none;">Cancel</button>
-                </div>
-                
-                <div class="player-input-group">
-                    <div class="player-input">
-                        <label>Player 1:</label>
-                        <input type="text" id="player1" placeholder="Enter name" disabled>
-                    </div>
-                    <div class="player-input">
-                        <label>Player 2:</label>
-                        <input type="text" id="player2" placeholder="Enter name" disabled>
-                    </div>
-                    <div class="player-input">
-                        <label>Player 3:</label>
-                        <input type="text" id="player3" placeholder="Enter name" disabled>
-                    </div>
-                    <div class="player-input">
-                        <label>Player 4:</label>
-                        <input type="text" id="player4" placeholder="Enter name" disabled>
-                    </div>
-                    <div class="player-input">
-                        <label>Player 5:</label>
-                        <input type="text" id="player5" placeholder="Enter name" disabled>
-                    </div>
-                </div>
+                <h2 class="section-title" data-translate="section_setup">Player Setup</h2>
+                <div id="setupContainer"></div>
             </div>
         </div>
 
         <!-- Current Week Tab -->
         <div id="week" class="tab-content">
             <div class="section">
-                <h2 class="section-title">Weekly Match</h2>
+                <h2 class="section-title" data-translate="section_weekly_match">Weekly Match</h2>
                 
                 <!-- Week Status Card -->
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #667eea;">
                     <div id="weekStatus"></div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                        <button class="btn btn-primary" onclick="startNewWeek()" id="newWeekBtn">Start New Week</button>
-                        <button class="btn btn-danger" onclick="resetCurrentWeekNoConfirm()" id="resetWeekBtn" style="display: none;">🗑️ Clear & Restart Week</button>
+                        <button class="btn btn-primary" onclick="startNewWeek()" id="newWeekBtn"><span data-translate="btn_start_week">Start New Week</span></button>
+                        <button class="btn btn-danger" onclick="resetCurrentWeekNoConfirm()" id="resetWeekBtn" style="display: none;"><span data-translate="btn_reset_week">🗑️ Clear & Restart Week</span></button>
                     </div>
                 </div>
                 
@@ -1158,77 +1142,18 @@
         <!-- Manual Historical Data Tab -->
         <div id="manual" class="tab-content">
             <div class="section">
-                <h2 class="section-title">Add Historical Week Data</h2>
-                <p style="margin-bottom: 20px; color: #666;">
+                <h2 class="section-title" data-translate="section_historical_data">Add Historical Week Data</h2>
+                <p style="margin-bottom: 20px; color: #666;" data-translate="historical_data_desc">
                     Use this form to manually enter data from previous weeks. This will update player statistics and improve future recommendations.
                 </p>
-
-                <div class="set-card">
-                    <h3>Week Number</h3>
-                    <div class="player-input">
-                        <label>Week #:</label>
-                        <input type="number" id="manualWeekNumber" min="1" placeholder="Enter week number" style="max-width: 200px;">
-                    </div>
-                </div>
-
-                <div class="sets-container" id="manualSetsContainer">
-                    <!-- Set 1 -->
-                    <div class="set-card">
-                        <h3>Set 1</h3>
-                        <div class="bench-selection">
-                            <h4>Bench Player:</h4>
-                            <select id="manualSet1Bench" class="manual-select">
-                                <option value="">Select player...</option>
-                            </select>
-                        </div>
-                        <div class="winner-selection">
-                            <h4>Winning Team:</h4>
-                            <div id="manualSet1Winners"></div>
-                        </div>
-                    </div>
-
-                    <!-- Set 2 -->
-                    <div class="set-card">
-                        <h3>Set 2</h3>
-                        <div class="bench-selection">
-                            <h4>Bench Player:</h4>
-                            <select id="manualSet2Bench" class="manual-select">
-                                <option value="">Select player...</option>
-                            </select>
-                        </div>
-                        <div class="winner-selection">
-                            <h4>Winning Team:</h4>
-                            <div id="manualSet2Winners"></div>
-                        </div>
-                    </div>
-
-                    <!-- Set 3 -->
-                    <div class="set-card">
-                        <h3>Set 3</h3>
-                        <div class="bench-selection">
-                            <h4>Bench Player:</h4>
-                            <select id="manualSet3Bench" class="manual-select">
-                                <option value="">Select player...</option>
-                            </select>
-                        </div>
-                        <div class="winner-selection">
-                            <h4>Winning Team:</h4>
-                            <div id="manualSet3Winners"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="manualStatus" style="margin-top: 20px;"></div>
-                <button class="btn btn-success" onclick="saveManualWeek()" style="margin-top: 20px;">
-                    💾 Save Historical Week
-                </button>
+                <div id="manualContainer"></div>
             </div>
         </div>
 
         <!-- Statistics Tab -->
         <div id="stats" class="tab-content active">
             <div class="section">
-                <h2 class="section-title">Bench Statistics</h2>
+                <h2 class="section-title" data-translate="section_statistics">Bench Statistics</h2>
                 <div id="statsContainer"></div>
             </div>
         </div>
@@ -1236,36 +1161,27 @@
         <!-- History Tab -->
         <div id="history" class="tab-content">
             <div class="section">
-                <h2 class="section-title">Match History</h2>
+                <h2 class="section-title" data-translate="section_history">Match History</h2>
                 <div id="historyContainer"></div>
             </div>
         </div>
 
         <!-- Data Tab -->
+        <!-- FAQ Tab -->
+        <div id="faq" class="tab-content">
+            <div class="section">
+                <h2 class="section-title" data-translate="section_faq">Frequently Asked Questions (FAQ)</h2>
+                <div id="faqContainer"></div>
+            </div>
+        </div>
+
         <div id="data" class="tab-content">
             <div class="section">
-                <h2 class="section-title">Data Management</h2>
-                <p style="margin-bottom: 20px; color: #666;">
-                    Your data is automatically saved in your browser's IndexedDB. 
-                    Use these tools to backup or restore your data.
+                <h2 class="section-title" data-translate="section_data_management">Data Management</h2>
+                <p style="margin-bottom: 20px; color: #666;" data-translate="data_management_desc">
+                    Your data is automatically saved in your browser's IndexedDB. Use these tools to backup or restore your data.
                 </p>
-                
-                <div class="export-import-section">
-                    <button class="btn btn-success" onclick="exportData()">
-                        📥 Export Data (JSON)
-                    </button>
-                    
-                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
-                        📤 Import Data (JSON)
-                    </button>
-                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
-                    
-                    <button class="btn btn-danger" onclick="clearAllData()">
-                        🗑️ Clear All Data
-                    </button>
-                </div>
-
-                <div id="dataStatus" style="margin-top: 20px;"></div>
+                <div id="dataContainer"></div>
             </div>
         </div>
     </div>
@@ -1587,6 +1503,133 @@
         // Player editing functions
         let originalPlayerValues = [];
 
+        // Generate Historical Data tab content
+        async function generateManualEntry() {
+            try {
+                const players = await loadPlayers();
+                
+                let html = `
+                    <div class="set-card">
+                        <h3>${t('week_number')}</h3>
+                        <div class="player-input">
+                            <label>${t('week_hash')}</label>
+                            <input type="number" id="manualWeekNumber" min="1" placeholder="${t('enter_week_number')}" style="max-width: 200px;">
+                        </div>
+                    </div>
+
+                    <div class="sets-container" id="manualSetsContainer">`;
+                
+                // Generate 3 sets
+                for (let i = 1; i <= 3; i++) {
+                    html += `
+                        <div class="set-card">
+                            <h3>${t('set')} ${i}</h3>
+                            <div class="bench-selection">
+                                <h4>${t('bench_player')}:</h4>
+                                <select id="manualSet${i}Bench" class="manual-select">
+                                    <option value="">${t('select_player')}</option>`;
+                    
+                    if (players) {
+                        players.forEach(player => {
+                            html += `<option value="${player.id}">${player.name}</option>`;
+                        });
+                    }
+                    
+                    html += `
+                                </select>
+                            </div>
+                            <div class="winner-selection">
+                                <h4>${t('winning_team')}:</h4>
+                                <div id="manualSet${i}Winners"></div>
+                            </div>
+                        </div>`;
+                }
+                
+                html += `
+                    </div>
+                    <div id="manualStatus" style="margin-top: 20px;"></div>
+                    <button class="btn btn-success" onclick="saveManualWeek()" style="margin-top: 20px;">
+                        ${t('save_historical_week')}
+                    </button>`;
+                
+                const container = document.getElementById('manualContainer');
+                if (container) {
+                    container.innerHTML = html;
+                }
+                
+                // Re-initialize manual entry after generating HTML
+                if (players) {
+                    await initManualEntry();
+                }
+            } catch (error) {
+                console.error('Error generating manual entry:', error);
+            }
+        }
+        
+        // Generate Data Management tab content
+        function generateDataManagement() {
+            let html = `
+                <div class="export-import-section">
+                    <button class="btn btn-success" onclick="exportData()">
+                        ${t('export_data_json')}
+                    </button>
+                    
+                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
+                        ${t('import_data_json')}
+                    </button>
+                    <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
+                    
+                    <button class="btn btn-danger" onclick="clearAllData()">
+                        ${t('clear_all_data_btn')}
+                    </button>
+                </div>
+
+                <div id="dataStatus" style="margin-top: 20px;"></div>`;
+            
+            const container = document.getElementById('dataContainer');
+            if (container) {
+                container.innerHTML = html;
+            }
+        }
+
+        // Generate Setup tab content
+        async function generateSetup() {
+            try {
+                const players = await loadPlayers();
+                
+                let html = `
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-primary" onclick="toggleEditPlayers()" id="editPlayersBtn">${t('edit_players')}</button>
+                        <button class="btn btn-success" onclick="savePlayers()" id="savePlayersBtn" style="display: none;">${t('save_players')}</button>
+                        <button class="btn btn-secondary" onclick="cancelEditPlayers()" id="cancelEditBtn" style="display: none;">${t('btn_cancel')}</button>
+                    </div>
+                    
+                    <div class="player-input-group">`;
+                
+                for (let i = 1; i <= 5; i++) {
+                    const playerName = players && players[i-1] ? players[i-1].name : '';
+                    html += `
+                        <div class="player-input">
+                            <label>${t('player_label')} ${i}:</label>
+                            <input type="text" id="player${i}" placeholder="${t('enter_name')}" disabled value="${playerName}">
+                        </div>`;
+                }
+                
+                html += `</div>`;
+                
+                const container = document.getElementById('setupContainer');
+                if (container) {
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error generating setup:', error);
+                const container = document.getElementById('setupContainer');
+                if (container) {
+                    container.innerHTML = '<div class="status-warning">Error loading setup. Please refresh the page.</div>';
+                }
+            }
+        }
+
         function toggleEditPlayers() {
             // Store original values
             originalPlayerValues = [];
@@ -1622,7 +1665,7 @@
                 for (let i = 1; i <= 5; i++) {
                     const name = document.getElementById(`player${i}`).value.trim();
                     if (!name) {
-                        alert('Please enter all 5 player names');
+                        alert(t('enter_all_names'));
                         return;
                     }
                     players.push({
@@ -1631,24 +1674,20 @@
                         set1Benches: 0,
                         set2Benches: 0,
                         set3Benches: 0,
+                        set3Points: 0,
                         totalBenches: 0
                     });
                 }
 
                 await saveToStore('players', { id: 'playerList', players: players });
                 
-                // Disable inputs and toggle buttons
-                for (let i = 1; i <= 5; i++) {
-                    document.getElementById(`player${i}`).disabled = true;
-                }
-                document.getElementById('editPlayersBtn').style.display = 'inline-block';
-                document.getElementById('savePlayersBtn').style.display = 'none';
-                document.getElementById('cancelEditBtn').style.display = 'none';
+                // Regenerate setup to reflect saved state
+                await generateSetup();
                 
-                alert('Players saved successfully!');
+                alert(t('players_saved_success'));
             } catch (error) {
                 console.error('Error saving players:', error);
-                alert('Error saving players. Please try again.');
+                alert(currentLang === 'en' ? 'Error saving players. Please try again.' : 'Eroare la salvarea jucătorilor. Te rog încearcă din nou.');
             }
         }
 
@@ -1689,7 +1728,7 @@
                     sets: [
                         { number: 1, bench: null, team1: null, team2: null, winners: null, locked: false },
                         { number: 2, bench: null, team1: null, team2: null, winners: null, locked: false },
-                        { number: 3, bench: null, team1: null, team2: null, winners: null, locked: false }
+                        { number: 3, bench: null, team1: null, team2: null, winners: null, locked: false, set3Duration: 'full' }
                     ],
                     completed: false
                 };
@@ -1705,56 +1744,81 @@
         // Rank eligible players by fairness algorithm
         function rankPlayersByFairness(eligiblePlayers, setNumber, currentWeek = null) {
             const ranked = [...eligiblePlayers].sort((a, b) => {
-                // CRITICAL: Deprioritize players who were already benched THIS WEEK
-                // Check if player was benched in Set 1 (when ranking for Set 2 or 3)
-                // or in Set 1 or 2 (when ranking for Set 3)
+                // Calculate weighted scores first
+                const aWeightedScore = (a.set1Benches * 1.0) + (a.set2Benches * 1.0) + (a.set3Points || 0);
+                const bWeightedScore = (b.set1Benches * 1.0) + (b.set2Benches * 1.0) + (b.set3Points || 0);
+                
+                // Check who benched earlier TODAY
+                let aBenchedThisWeek = false;
+                let bBenchedThisWeek = false;
                 if (currentWeek) {
-                    const aBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === a.id);
-                    const bBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === b.id);
-                    
-                    // If A was benched this week but B wasn't, B is better
-                    if (aBenchedThisWeek && !bBenchedThisWeek) return 1;
-                    // If B was benched this week but A wasn't, A is better
-                    if (bBenchedThisWeek && !aBenchedThisWeek) return -1;
-                    // If both or neither were benched this week, continue with normal fairness
+                    aBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === a.id);
+                    bBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === b.id);
                 }
-
-                // Priority 1: Set-specific benches
-                if (setNumber === 1) {
-                    if (a.set1Benches !== b.set1Benches) {
-                        return a.set1Benches - b.set1Benches;
-                    }
-                } else if (setNumber === 2) {
-                    if (a.set2Benches !== b.set2Benches) {
-                        return a.set2Benches - b.set2Benches;
-                    }
-                } else if (setNumber === 3) {
-                    if (a.set3Benches !== b.set3Benches) {
-                        return a.set3Benches - b.set3Benches;
+                
+                // Check who was a winner in previous set(s) TODAY
+                let aWasWinnerThisWeek = false;
+                let bWasWinnerThisWeek = false;
+                if (currentWeek) {
+                    for (let i = 0; i < setNumber - 1; i++) {
+                        const set = currentWeek.sets[i];
+                        if (set.winners && set.winners.includes(a.id)) {
+                            aWasWinnerThisWeek = true;
+                        }
+                        if (set.winners && set.winners.includes(b.id)) {
+                            bWasWinnerThisWeek = true;
+                        }
                     }
                 }
+                
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 0 (ABSOLUTE LAST): Players who BENCHED earlier TODAY
+                // ═══════════════════════════════════════════════════════════════════
+                if (aBenchedThisWeek && !bBenchedThisWeek) return 1;  // A benched = last
+                if (bBenchedThisWeek && !aBenchedThisWeek) return -1; // B benched = last
+                
+                // ═══════════════════════════════════════════════════════════════════
+                // SPECIAL RULE: Winner who is 1+ behind another specific player
+                // ═══════════════════════════════════════════════════════════════════
+                // If A is a winner and 1+ behind B specifically, A gets priority over B
+                if (aWasWinnerThisWeek && bWeightedScore - aWeightedScore >= 1.0) {
+                    return -1; // A (winner) gets priority over B (who is 1+ ahead)
+                }
+                
+                // If B is a winner and 1+ behind A specifically, B gets priority over A
+                if (bWasWinnerThisWeek && aWeightedScore - bWeightedScore >= 1.0) {
+                    return 1; // B (winner) gets priority over A (who is 1+ ahead)
+                }
+                
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 1: Normal weighted score comparison
+                // ═══════════════════════════════════════════════════════════════════
+                // Lower score = higher priority (more deserving to bench)
+                if (aWeightedScore !== bWeightedScore) {
+                    return aWeightedScore - bWeightedScore;
+                }
 
-                // Priority 2: Set 1 benches (if not already compared)
-                if (setNumber !== 1 && a.set1Benches !== b.set1Benches) {
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 2: Set-specific bench count (tiebreaker)
+                // ═══════════════════════════════════════════════════════════════════
+                if (setNumber === 1 && a.set1Benches !== b.set1Benches) {
                     return a.set1Benches - b.set1Benches;
-                }
-
-                // Priority 3: Set 2 benches (if not already compared)
-                if (setNumber !== 2 && a.set2Benches !== b.set2Benches) {
+                } else if (setNumber === 2 && a.set2Benches !== b.set2Benches) {
                     return a.set2Benches - b.set2Benches;
-                }
-
-                // Priority 4: Set 3 benches (if not already compared)
-                if (setNumber !== 3 && a.set3Benches !== b.set3Benches) {
+                } else if (setNumber === 3 && a.set3Benches !== b.set3Benches) {
                     return a.set3Benches - b.set3Benches;
                 }
 
-                // Priority 5: Total benches
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 3: Total benches
+                // ═══════════════════════════════════════════════════════════════════
                 if (a.totalBenches !== b.totalBenches) {
                     return a.totalBenches - b.totalBenches;
                 }
 
-                // Priority 6: Random (stable sort by ID)
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 4: Stable sort by ID
+                // ═══════════════════════════════════════════════════════════════════
                 return a.id - b.id;
             });
 
@@ -1775,7 +1839,7 @@
 
             if (!currentWeek || currentWeek.completed) {
                 document.getElementById('weekStatus').innerHTML = 
-                    '<div class="status-info">No active week. Start a new week to begin.</div>';
+                    `<div class="status-info">${t('msg_no_active_week')}</div>`;
                 newWeekBtn.disabled = false;
                 newWeekBtn.style.display = 'inline-block';
                 resetWeekBtn.style.display = 'none';
@@ -1789,7 +1853,7 @@
             resetWeekBtn.disabled = false;
             console.log('Reset button should now be visible');
             document.getElementById('weekStatus').innerHTML = 
-                `<div class="status-success">Week ${currentWeek.weekNumber} - In Progress</div>`;
+                `<div class="status-success">${t('msg_week_in_progress', currentWeek.weekNumber)}</div>`;
 
             let html = '<div class="sets-container">';
 
@@ -1814,12 +1878,12 @@
                 }
 
                 html += `<div class="set-card">
-                    <h3>Set ${set.number}</h3>`;
+                    <h3>${t('set_number', set.number)}</h3>`;
 
                 // Bench selection
                 if (!set.locked) {
                     html += `<div class="bench-selection">
-                        <h4>Select Bench Player:</h4>
+                        <h4>${t('select_bench')}</h4>
                         <div class="bench-options">`;
 
                     // For Set 1, rank all players
@@ -1832,11 +1896,11 @@
                             const rankClass = `rank-${rank}`;
                             let rankLabel = '';
                             
-                            if (rank === 1) rankLabel = '1st';
-                            else if (rank === 2) rankLabel = '2nd';
-                            else if (rank === 3) rankLabel = '3rd';
-                            else if (rank === 4) rankLabel = '4th';
-                            else if (rank === 5) rankLabel = '5th';
+                            if (rank === 1) rankLabel = t('rank_1st');
+                            else if (rank === 2) rankLabel = t('rank_2nd');
+                            else if (rank === 3) rankLabel = t('rank_3rd');
+                            else if (rank === 4) rankLabel = t('rank_4th');
+                            else if (rank === 5) rankLabel = t('rank_5th');
                             
                             html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
                                 onclick="selectBench(${set.number}, ${player.id})">
@@ -1865,7 +1929,7 @@
                             const isSelected = set.bench === player.id;
                             const rank = index + 1;
                             const rankClass = rank <= 2 ? `rank-${rank}` : '';
-                            const rankLabel = rank === 1 ? '1st' : rank === 2 ? '2nd' : '';
+                            const rankLabel = rank === 1 ? t('rank_1st') : rank === 2 ? t('rank_2nd') : '';
                             
                             html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
                                 onclick="selectBench(${set.number}, ${player.id})">
@@ -1879,7 +1943,7 @@
                             const isSelected = set.bench === player.id;
                             const rank = index + 3; // Position 3 or 4
                             const rankClass = `rank-${rank}`;
-                            const rankLabel = rank === 3 ? '3rd' : '4th';
+                            const rankLabel = rank === 3 ? t('rank_3rd') : t('rank_4th');
                             
                             html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
                                 onclick="selectBench(${set.number}, ${player.id})">
@@ -1894,7 +1958,7 @@
                             html += `<div class="bench-option rank-5 ${isSelected ? 'selected' : ''}" 
                                 onclick="selectBench(${set.number}, ${previousBencherPlayer.id})">
                                 ${previousBencherPlayer.name}
-                                <span class="rank-badge">5th</span>
+                                <span class="rank-badge">${t('rank_5th')}</span>
                             </div>`;
                         }
                     }
@@ -1910,29 +1974,29 @@
                     // Team Builder - show until both teams are complete
                     if (!set.locked && !teamsComplete) {
                         html += `<div class="team-builder">
-                            <h4>Build Teams (Click players to assign):</h4>
+                            <h4>${t('build_teams')}</h4>
                             <div class="teams-grid">
                                 <div class="team-box">
-                                    <h5>Team 1</h5>
+                                    <h5>${t('team_1')}</h5>
                                     <div class="player-dropzone ${set.team1 && set.team1.length === 2 ? 'has-players' : ''}" id="team1-set${set.number}">
                                         ${set.team1 && set.team1.length > 0 ? set.team1.map(id => {
                                             const p = players.find(pl => pl.id === id);
                                             return `<span class="player-draggable in-team" onclick="removeFromTeam(${set.number}, 1, ${id})">${p.name} ✕</span>`;
-                                        }).join('') : '<span style="color: #999; font-style: italic;">Click 2 players below</span>'}
+                                        }).join('') : `<span style="color: #999; font-style: italic;">${t('click_2_players')}</span>`}
                                     </div>
                                 </div>
                                 <div class="team-box">
-                                    <h5>Team 2</h5>
+                                    <h5>${t('team_2')}</h5>
                                     <div class="player-dropzone ${set.team2 && set.team2.length === 2 ? 'has-players' : ''}" id="team2-set${set.number}">
                                         ${set.team2 && set.team2.length > 0 ? set.team2.map(id => {
                                             const p = players.find(pl => pl.id === id);
                                             return `<span class="player-draggable in-team" onclick="removeFromTeam(${set.number}, 2, ${id})">${p.name} ✕</span>`;
-                                        }).join('') : '<span style="color: #999; font-style: italic;">Click 2 players below</span>'}
+                                        }).join('') : `<span style="color: #999; font-style: italic;">${t('click_2_players')}</span>`}
                                     </div>
                                 </div>
                             </div>
                             <div class="available-players">
-                                <h5>Available Players (click to add to Team 1 or Team 2):</h5>`;
+                                <h5>${t('available_players')}</h5>`;
                         
                         const onCourt = players.filter(p => p.id !== set.bench);
                         const assignedIds = [...(set.team1 || []), ...(set.team2 || [])];
@@ -1943,7 +2007,7 @@
                         });
                         
                         if (availablePlayers.length === 0) {
-                            html += '<span style="color: #28a745; font-weight: 600;">✓ All players assigned!</span>';
+                            html += `<span style="color: #28a745; font-weight: 600;">${t('all_assigned')}</span>`;
                         }
                         
                         html += `</div></div>`;
@@ -1955,14 +2019,14 @@
                         const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
                         
                         html += `<div class="court-display">
-                            <h4>Teams on Court:</h4>
+                            <h4>${t('teams_on_court')}</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
                                 <div style="padding: 10px; background: #f8f9fa; border-radius: 5px; border: 2px solid #6c757d;">
-                                    <strong style="color: #667eea;">Team 1:</strong><br>
+                                    <strong style="color: #667eea;">${t('team_1')}:</strong><br>
                                     ${team1Players.join(' & ')}
                                 </div>
                                 <div style="padding: 10px; background: #f8f9fa; border-radius: 5px; border: 2px solid #6c757d;">
-                                    <strong style="color: #667eea;">Team 2:</strong><br>
+                                    <strong style="color: #667eea;">${t('team_2')}:</strong><br>
                                     ${team2Players.join(' & ')}
                                 </div>
                             </div>
@@ -1970,16 +2034,38 @@
 
                         // Winner selection
                         if (!set.locked) {
+                            // For Set 3, add duration selector
+                            if (set.number === 3) {
+                                const currentDuration = set.set3Duration || 'full';
+                                html += `<div class="bench-selection" style="margin-bottom: 20px;">
+                                    <h4>${t('set3_duration')}</h4>
+                                    <div class="bench-options">
+                                        <div class="bench-option ${currentDuration === 'full' ? 'selected' : ''}"
+                                            onclick="selectSet3Duration('full')">
+                                            ${t('duration_full')}
+                                        </div>
+                                        <div class="bench-option ${currentDuration === 'two-thirds' ? 'selected' : ''}"
+                                            onclick="selectSet3Duration('two-thirds')">
+                                            ${t('duration_two_thirds')}
+                                        </div>
+                                        <div class="bench-option ${currentDuration === 'less-half' ? 'selected' : ''}"
+                                            onclick="selectSet3Duration('less-half')">
+                                            ${t('duration_less_half')}
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }
+                            
                             html += `<div class="winner-selection">
-                                <h4>Select Winning Team ${set.number === 3 ? '(Optional for Set 3)' : ''}:</h4>
+                                <h4>${set.number === 3 ? t('select_winner_optional') : t('select_winner')}:</h4>
                                 <div class="winner-options">
                                     <div class="winner-option ${set.winners && JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team1].sort()) ? 'selected' : ''}"
                                         onclick="selectWinners(${set.number}, [${set.team1}])">
-                                        Team 1: ${team1Players.join(' & ')}
+                                        ${t('team_1')}: ${team1Players.join(' & ')}
                                     </div>
                                     <div class="winner-option ${set.winners && JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team2].sort()) ? 'selected' : ''}"
                                         onclick="selectWinners(${set.number}, [${set.team2}])">
-                                        Team 2: ${team2Players.join(' & ')}
+                                        ${t('team_2')}: ${team2Players.join(' & ')}
                                     </div>
                                 </div>
                             </div>`;
@@ -1988,37 +2074,33 @@
                             if (set.number === 3) {
                                 html += `<div style="display: flex; gap: 10px; margin-top: 10px;">`;
                                 if (set.winners) {
-                                    html += `<button class="btn btn-success" onclick="lockSet(${set.number})">Lock Set ${set.number} with Winner</button>`;
+                                    html += `<button class="btn btn-success" onclick="lockSet(${set.number})">${t('btn_lock_set_winner', set.number)}</button>`;
                                 }
-                                html += `<button class="btn btn-secondary" onclick="lockSet(${set.number}, true)">Lock Set ${set.number} - No Winner (Time Limit)</button>
+                                html += `<button class="btn btn-secondary" onclick="lockSet(${set.number}, true)">${t('btn_lock_set_no_winner', set.number)}</button>
                                 </div>`;
-                            } else {
-                                // Sets 1 and 2 require a winner
-                                if (set.winners) {
-                                    html += `<button class="btn btn-success" onclick="lockSet(${set.number})">Lock Set ${set.number}</button>`;
-                                }
                             }
+                            // Sets 1 and 2 automatically lock when winner is selected - no button needed
                         }
 
                         if (set.locked) {
                             const winnerTeamNum = set.winners ? (JSON.stringify(set.winners.sort()) === JSON.stringify([...set.team1].sort()) ? 1 : 2) : null;
                             const winnerNames = winnerTeamNum ? (winnerTeamNum === 1 ? team1Players.join(' & ') : team2Players.join(' & ')) : null;
-                            const benchedPlayerName = set.bench !== null ? players.find(p => p.id === set.bench).name : 'None';
+                            const benchedPlayerName = set.bench !== null ? players.find(p => p.id === set.bench).name : t('benched');
                             html += `<div style="background: #f8f9ff; color: #495057; border: 1px solid #c7d2fe; padding: 15px 20px; border-radius: 8px; margin: 0; font-size: 14px; font-weight: 500;">
-                                ✓ Set locked${winnerNames ? ` - <span style="color: #667eea; font-weight: 600;">Winners: Team ${winnerTeamNum} (${winnerNames})</span>` : ' - No winner (time limit)'} | <span style="color: #6c757d;">Benched: ${benchedPlayerName}</span>
+                                ${t('msg_set_locked')}${winnerNames ? ` - <span style="color: #667eea; font-weight: 600;">${t('winners')}: ${t('team')} ${winnerTeamNum} (${winnerNames})</span>` : t('msg_no_winner_time')} | <span style="color: #6c757d;">${t('benched')}: ${benchedPlayerName}</span>
                             </div>`;
                         }
                     }
                 } else {
                     html += `<button class="btn btn-primary" onclick="autoSelectBench(${set.number})">
-                        Auto-Select Fair Bench
+                        ${t('btn_auto_select')}
                     </button>`;
                 }
 
                 // Add Clear Set button if any data has been entered for this set
                 if (set.bench !== null || set.team1 !== null || set.team2 !== null || set.winners !== null || set.locked) {
                     html += `<button class="btn btn-danger" onclick="clearSet(${set.number})" style="margin-left: 10px; font-size: 13px;">
-                        🗑️ Clear Set ${set.number}
+                        ${t('btn_clear_set', set.number)}
                     </button>`;
                 }
 
@@ -2030,7 +2112,7 @@
             // Add complete week button
             if (currentWeek.sets.every(s => s.locked)) {
                 html += `<button class="btn btn-success" onclick="completeWeek()" style="margin-top: 20px;">
-                    Complete Week ${currentWeek.weekNumber}
+                    ${t('btn_complete_week')} ${currentWeek.weekNumber}
                 </button>`;
             }
 
@@ -2139,11 +2221,32 @@
             }
         }
 
+        async function selectSet3Duration(duration) {
+            try {
+                const currentWeek = await getFromStore('currentWeek', 'current');
+                if (!currentWeek) return;
+                
+                // Update Set 3 duration
+                currentWeek.sets[2].set3Duration = duration;
+                
+                await saveToStore('currentWeek', currentWeek);
+                await displayCurrentWeek();
+            } catch (error) {
+                console.error('Error selecting Set 3 duration:', error);
+            }
+        }
+
         async function selectWinners(setNumber, winners) {
             try {
                 const currentWeek = await getFromStore('currentWeek', 'current');
                 if (!currentWeek) return;
                 currentWeek.sets[setNumber - 1].winners = winners;
+                
+                // Automatically lock Sets 1 and 2 when winner is selected
+                if (setNumber === 1 || setNumber === 2) {
+                    currentWeek.sets[setNumber - 1].locked = true;
+                }
+                
                 await saveToStore('currentWeek', currentWeek);
                 await displayCurrentWeek();
             } catch (error) {
@@ -2257,7 +2360,7 @@ Are you sure you want to continue?`;
                 }
 
                 // Reset the set to default state
-                currentWeek.sets[setNumber - 1] = {
+                const resetSet = {
                     number: setNumber,
                     bench: null,
                     team1: null,
@@ -2265,6 +2368,13 @@ Are you sure you want to continue?`;
                     winners: null,
                     locked: false
                 };
+                
+                // Add set3Duration for Set 3
+                if (setNumber === 3) {
+                    resetSet.set3Duration = 'full';
+                }
+                
+                currentWeek.sets[setNumber - 1] = resetSet;
 
                 await saveToStore('currentWeek', currentWeek);
                 await displayCurrentWeek();
@@ -2385,13 +2495,27 @@ Are you sure you want to continue?`;
                 const players = await loadPlayers();
                 if (!currentWeek || !players) return;
 
+                // Get Set 3 duration point value
+                const set3Duration = currentWeek.sets[2].set3Duration || 'full';
+                const set3PointValue = set3Duration === 'full' ? 1.0 : 
+                                       set3Duration === 'two-thirds' ? 0.8 : 0.6;
+
                 // Update player statistics
                 currentWeek.sets.forEach((set, index) => {
                     const player = players.find(p => p.id === set.bench);
                     if (player) {
-                        if (index === 0) player.set1Benches++;
-                        if (index === 1) player.set2Benches++;
-                        if (index === 2) player.set3Benches++;
+                        if (index === 0) {
+                            player.set1Benches++;
+                        }
+                        if (index === 1) {
+                            player.set2Benches++;
+                        }
+                        if (index === 2) {
+                            player.set3Benches++;
+                            // Initialize set3Points if it doesn't exist
+                            if (!player.set3Points) player.set3Points = 0;
+                            player.set3Points += set3PointValue;
+                        }
                         player.totalBenches++;
                     }
                 });
@@ -2420,18 +2544,18 @@ Are you sure you want to continue?`;
                 const players = await loadPlayers();
                 if (!players) {
                     document.getElementById('statsContainer').innerHTML = 
-                        '<div class="no-data"><div class="no-data-icon">📊</div><p>No statistics yet. Set up players and complete some weeks first.</p></div>';
+                        `<div class="no-data"><div class="no-data-icon">📊</div><p>${t('msg_no_players')}</p></div>`;
                     return;
                 }
 
                 // Calculate weighted bench scores for each player
-                // Weights: Set 1 = 1.0, Set 2 = 0.8, Set 3 = 0.6
+                // Weights: Set 1 = 1.0, Set 2 = 1.0, Set 3 = variable
                 const playersWithScores = players.map(player => ({
                     ...player,
-                    weightedScore: (player.set1Benches * 1.0) + (player.set2Benches * 0.8) + (player.set3Benches * 0.6)
+                    weightedScore: (player.set1Benches * 1.0) + (player.set2Benches * 1.0) + (player.set3Points || 0)
                 }));
 
-                // Sort players by weighted score (descending - highest score first)
+                // Sort players by weighted score (descending - highest score first shows most benched)
                 const sortedPlayers = [...playersWithScores].sort((a, b) => {
                     // Priority 1: Weighted score (descending - highest score first)
                     if (a.weightedScore !== b.weightedScore) {
@@ -2445,19 +2569,19 @@ Are you sure you want to continue?`;
                     return a.name.localeCompare(b.name);
                 });
 
-                // Calculate max weighted score for proportional display
+                // Calculate max weighted score for proportional display (now first element)
                 const maxWeightedScore = sortedPlayers.length > 0 ? sortedPlayers[0].weightedScore : 0;
 
                 let html = `<div class="stats-table-wrapper"><table class="stats-table">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Player</th>
-                            <th>S1</th>
-                            <th>S2</th>
-                            <th>S3</th>
-                            <th>Total</th>
-                            <th>Points</th>
+                            <th>${t('player')}</th>
+                            <th>${t('set1_benches')}</th>
+                            <th>${t('set2_benches')}</th>
+                            <th>${t('set3_benches')}</th>
+                            <th>${t('total_benches')}</th>
+                            <th>${t('points')}</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -2491,23 +2615,26 @@ Are you sure you want to continue?`;
 
                 html += `</tbody></table></div>`;
                 html += `<div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px; font-size: 0.95em; color: #666;">
-                    <strong>Weighted Scoring System:</strong><br>
-                    Set 1 benches: <strong>1.0 point</strong> each (most important)<br>
-                    Set 2 benches: <strong>0.8 points</strong> each<br>
-                    Set 3 benches: <strong>0.6 points</strong> each<br>
+                    <strong>${t('scoring_system')}</strong><br>
+                    ${t('set1_points_info')}<br>
+                    ${t('set2_points_info')}<br>
+                    ${t('set3_points_info')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set3_full')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set3_two_thirds')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set3_less_half')}<br>
                     <br>
-                    <strong>Points Column:</strong> Shows the weighted score for each player. Lower points = more deserving to be benched next.<br>
+                    ${t('points_column_info')}<br>
                     <br>
-                    <strong>Example:</strong> 1 Set 1 bench = 1.0 pts, 1 Set 2 bench = 0.8 pts, 1 Set 3 bench = 0.6 pts<br>
+                    ${t('scoring_example')}<br>
                     <br>
-                    <strong>Ranking:</strong> Players ranked by highest weighted score first
+                    ${t('ranking_info')}
                 </div>`;
                 
                 document.getElementById('statsContainer').innerHTML = html;
             } catch (error) {
                 console.error('Error displaying stats:', error);
                 document.getElementById('statsContainer').innerHTML = 
-                    '<div class="status-warning">Error loading statistics.</div>';
+                    `<div class="status-warning">${currentLang === 'en' ? 'Error loading statistics.' : 'Eroare la încărcarea statisticilor.'}</div>`;
             }
         }
 
@@ -2518,14 +2645,14 @@ Are you sure you want to continue?`;
 
             if (!weeks || weeks.length === 0) {
                 document.getElementById('historyContainer').innerHTML = 
-                    '<div class="no-data"><div class="no-data-icon">📜</div><p>No match history yet. Complete some weeks to see history.</p></div>';
+                    `<div class="no-data"><div class="no-data-icon">📜</div><p>${t('no_history')}</p></div>`;
                 return;
             }
 
             let html = '';
             weeks.sort((a, b) => b.weekNumber - a.weekNumber).forEach(week => {
                 html += `<div class="week-card">
-                    <h3>Week ${week.weekNumber}</h3>
+                    <h3>${t('week')} ${week.weekNumber}</h3>
                     <div class="week-sets">`;
 
                 week.sets.forEach(set => {
@@ -2533,14 +2660,14 @@ Are you sure you want to continue?`;
                     
                     let winnerDisplay = '';
                     if (!set.winners) {
-                        winnerDisplay = 'No winner (time limit)';
+                        winnerDisplay = t('no_winner_time_limit');
                     } else if (set.team1 && set.team2) {
                         const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
                         const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
                         const isTeam1Winner = JSON.stringify([...set.winners].sort()) === JSON.stringify([...set.team1].sort());
                         winnerDisplay = isTeam1Winner ? 
-                            `Team 1: ${team1Players.join(' & ')}` : 
-                            `Team 2: ${team2Players.join(' & ')}`;
+                            `${t('team_1')}: ${team1Players.join(' & ')}` : 
+                            `${t('team_2')}: ${team2Players.join(' & ')}`;
                     } else {
                         const winnerNames = players.filter(p => set.winners && set.winners.includes(p.id))
                             .map(p => p.name).join(' & ');
@@ -2549,8 +2676,8 @@ Are you sure you want to continue?`;
 
                     html += `<div class="week-set">
                         <div class="week-set-header">
-                            <span>Set ${set.number}</span>
-                            <span class="winner-badge${!set.winners ? '' : ''}">${set.winners ? 'Winners' : 'Result'}: ${winnerDisplay}</span>
+                            <span>${t('set')} ${set.number}</span>
+                            <span class="winner-badge${!set.winners ? '' : ''}">${set.winners ? t('winners') : t('result')}: ${winnerDisplay}</span>
                         </div>`;
                     
                     if (set.team1 && set.team2) {
@@ -2558,12 +2685,12 @@ Are you sure you want to continue?`;
                         const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
                         html += `
                             <div style="margin-top: 8px; font-size: 0.9em;">
-                                <div>Team 1: ${team1Players.join(' & ')}</div>
-                                <div>Team 2: ${team2Players.join(' & ')}</div>
+                                <div>${t('team_1')}: ${team1Players.join(' & ')}</div>
+                                <div>${t('team_2')}: ${team2Players.join(' & ')}</div>
                             </div>`;
                     }
                     
-                    html += `<div style="margin-top: 5px;">Bench: <strong>${benchPlayer.name}</strong></div>
+                    html += `<div style="margin-top: 5px;">${t('bench')}: <strong>${benchPlayer.name}</strong></div>
                     </div>`;
                 });
 
@@ -3160,6 +3287,18 @@ Click Cancel to keep your data safe`;
                 await displayStats();
                 console.log('Statistics displayed');
                 
+                // Generate setup tab content after DB is ready
+                await generateSetup();
+                console.log('Setup generated');
+                
+                // Generate manual entry tab
+                await generateManualEntry();
+                console.log('Manual entry generated');
+                
+                // Generate data management tab
+                generateDataManagement();
+                console.log('Data management generated');
+                
                 // Remove loading message
                 const loadingMsg = document.getElementById('loadingMessage');
                 if (loadingMsg) {
@@ -3190,6 +3329,733 @@ Click Cancel to keep your data safe`;
                 }
             }
         });
+        // ═══════════════════════════════════════════════════════════════════════════
+        // TRANSLATION SYSTEM
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        const translations = {
+            en: {
+                // Header
+                app_title: "🎾 Tennis Rotation Manager",
+                app_subtitle: "Fair doubles rotation for 5 players",
+                
+                // Navigation tabs
+                tab_stats: "Statistics",
+                tab_week: "Current Week",
+                tab_faq: "FAQ",
+                tab_history: "History",
+                tab_setup: "Setup",
+                tab_manual: "Historical Data",
+                tab_data: "Data",
+                
+                // Common buttons
+                btn_save: "Save",
+                btn_cancel: "Cancel",
+                btn_clear: "Clear",
+                btn_edit: "Edit",
+                btn_export: "Export",
+                btn_import: "Import",
+                btn_delete: "Delete",
+                btn_confirm: "Confirm",
+                
+                // Week actions
+                btn_start_week: "Start New Week",
+                btn_reset_week: "Clear & Restart Week",
+                btn_complete_week: "Complete Week",
+                btn_lock_set: "Lock Set",
+                btn_lock_set_winner: "Lock Set {0} with Winner",
+                btn_lock_set_no_winner: "Lock Set {0} - No Winner (Time Limit)",
+                btn_clear_set: "🗑️ Clear Set {0}",
+                btn_auto_select: "Auto-Select Fair Bench",
+                
+                // Set labels
+                set: "Set",
+                set_number: "Set {0}",
+                team: "Team",
+                team_number: "Team {0}",
+                benched: "Benched",
+                winners: "Winners",
+                select_bench: "Select Bench Player:",
+                select_winner: "Select Winning Team",
+                select_winner_optional: "Select Winning Team (Optional for Set 3):",
+                
+                // Player setup
+                player_setup: "Player Setup",
+                player_name: "Player {0}",
+                edit_players: "✏️ Edit Players",
+                save_players: "💾 Save Players",
+                player_names_required: "Please enter all 5 player names",
+                players_saved: "✓ Players saved successfully!",
+                
+                // Statistics
+                statistics: "Statistics",
+                rank: "Rank",
+                player: "PLAYER",
+                set1_benches: "SET 1",
+                set2_benches: "SET 2",
+                set3_benches: "SET 3",
+                total_benches: "TOTAL",
+                points: "POINTS",
+                visual: "VISUAL",
+                no_stats: "No player statistics available yet. Add players in the Setup tab.",
+                
+                // Scoring system
+                scoring_system: "Weighted Scoring System:",
+                set1_points_info: "Set 1 benches: <strong>1.0 point</strong> each",
+                set2_points_info: "Set 2 benches: <strong>1.0 point</strong> each",
+                set3_points_info: "Set 3 benches: <strong>Variable points</strong> based on duration played",
+                set3_full: "• Full set: 1.0 point",
+                set3_two_thirds: "• 2/3 set: 0.8 points",
+                set3_less_half: "• Less than half: 0.6 points",
+                points_column_info: "<strong>Points Column:</strong> Shows the weighted score for each player. Higher points = more benched.",
+                scoring_example: "<strong>Example:</strong> 1 Set 1 bench = 1.0 pts, 1 Set 2 bench = 1.0 pts, 1 Set 3 bench (full) = 1.0 pts",
+                ranking_info: "<strong>Ranking:</strong> Players ranked by highest weighted score first (most benched at top)",
+                
+                // Set 3 duration
+                set3_duration: "Set 3 Duration Played:",
+                duration_full: "Full Set (1.0 pt)",
+                duration_two_thirds: "2/3 Set (0.8 pts)",
+                duration_less_half: "Less than Half (0.6 pts)",
+                
+                // Messages and status
+                msg_no_players: "No players configured. Please go to Setup tab to add players.",
+                msg_no_active_week: "No active week. Start a new week to begin.",
+                msg_week_in_progress: "Week {0} - In Progress",
+                msg_set_locked: "✓ Set locked",
+                msg_no_winner_time: " - No winner (time limit)",
+                msg_select_winner_first: "Please select a winning team before locking this set.",
+                msg_no_active_week_reset: "No active week to reset.",
+                msg_week_reset_success: "Week reset completed successfully",
+                
+                // Current Week - Teams on court
+                teams_on_court: "Teams on Court:",
+                
+                // History
+                history_title: "Completed Weeks History",
+                no_history: "No completed weeks yet. Complete a week to see it here.",
+                week_number: "Week {0}",
+                completed_on: "Completed on {0}",
+                
+                // Historical Data
+                manual_entry_title: "Add Historical Week Data",
+                manual_entry_desc: "Use this to manually enter results from past weeks that were played before using this app.",
+                week_to_add: "Week to Add:",
+                add_week_data: "Add Week Data",
+                week_added_success: "✓ Week {0} data added successfully!",
+                
+                // Data Management
+                data_management: "Data Management",
+                export_title: "Export Data",
+                export_desc: "Download all your data as a backup JSON file",
+                export_all: "Export All Data",
+                import_title: "Import Data",
+                import_desc: "Restore data from a previously exported JSON file",
+                import_file: "Import Data from File",
+                choose_file: "Choose File",
+                clear_all_title: "Clear All Data",
+                clear_all_desc: "⚠️ DANGER ZONE: Permanently delete all data",
+                clear_all_btn: "Clear All Data",
+                data_status: "Status:",
+                
+                // Confirmation dialogs
+                confirm_clear_set_title: "⚠️ WARNING: Clear Set {0}?",
+                confirm_clear_set_msg: "This will delete all data for Set {0}:\n\n• Benched player\n• Team assignments\n• Winner selection\n• Locked status\n\nYou will need to re-enter all information for this set.\n\nAre you sure you want to continue?",
+                confirm_yes_clear: "Yes, Clear Set",
+                confirm_reset_week_title: "⚠️ RESET WEEK {0}?",
+                confirm_reset_week_msg: "This will DELETE all current data for Week {0}:\n\n• All bench selections\n• All team assignments\n• All winner selections\n• All set progress\n\nThe week will be completely reset and you'll need to start over.\n\nAre you sure you want to continue?",
+                confirm_yes_restart: "Yes, Clear & Restart",
+                confirm_clear_all_title: "⚠️ DANGER: CLEAR ALL DATA ⚠️",
+                confirm_clear_all_first: "This will PERMANENTLY DELETE:\n\n✗ All 5 player names\n✗ All player statistics (bench counts)\n✗ All completed weeks (history)\n✗ Current week in progress\n✗ EVERYTHING in the app\n\n⚠️ Make sure you exported a backup first!\n\nClick to continue to final confirmation.",
+                confirm_continue: "Continue to Final Warning",
+                confirm_clear_all_final: "🚨 FINAL WARNING 🚨",
+                confirm_clear_all_final_msg: "You are about to delete ALL DATA.\nThis action CANNOT be undone!\n\nHave you exported your data as backup?\n\nClick to DELETE EVERYTHING\nClick Cancel to keep your data safe",
+                confirm_delete_everything: "DELETE EVERYTHING",
+                confirm_keep_safe: "Keep My Data Safe",
+                
+                // Rank badges
+                rank_1st: "1st",
+                rank_2nd: "2nd",
+                rank_3rd: "3rd",
+                rank_4th: "4th",
+                rank_5th: "5th",
+                
+                // Section titles
+                section_statistics: "Bench Statistics",
+                section_history: "Match History",
+                section_setup: "Player Setup",
+                section_data: "Data Management",
+                section_weekly_match: "Weekly Match",
+                section_faq: "Frequently Asked Questions (FAQ)",
+                
+                // Current Week - Team building
+                build_teams: "Build Teams (Click players to assign):",
+                team_1: "Team 1",
+                team_2: "Team 2",
+                click_2_players: "Click 2 players below",
+                available_players: "Available Players (click to add to Team 1 or Team 2):",
+                all_assigned: "✓ All players assigned!",
+                teams_on_court: "Teams on Court:",
+                
+                // History
+                week: "Week",
+                result: "Result",
+                no_winner_time_limit: "No winner (time limit)",
+                bench: "Bench",
+                
+                // Setup tab
+                player_label: "Player",
+                enter_name: "Enter name",
+                enter_all_names: "Please enter all 5 player names",
+                players_saved_success: "✓ Players saved successfully!",
+                
+                // Historical Data tab
+                section_historical_data: "Add Historical Week Data",
+                historical_data_desc: "Use this form to manually enter data from previous weeks. This will update player statistics and improve future recommendations.",
+                week_number: "Week Number",
+                week_hash: "Week #",
+                enter_week_number: "Enter week number",
+                bench_player: "Bench Player",
+                winning_team: "Winning Team",
+                select_player: "Select player...",
+                save_historical_week: "💾 Save Historical Week",
+                
+                // Data Management tab
+                section_data_management: "Data Management",
+                data_management_desc: "Your data is automatically saved in your browser's IndexedDB. Use these tools to backup or restore your data.",
+                export_data_json: "📥 Export Data (JSON)",
+                import_data_json: "📤 Import Data (JSON)",
+                clear_all_data_btn: "🗑️ Clear All Data",
+            },
+            ro: {
+                // Header
+                app_title: "🎾 Manager Rotație Tenis",
+                app_subtitle: "Rotație echitabilă dublu pentru 5 jucători",
+                
+                // Navigation tabs
+                tab_stats: "Statistici",
+                tab_week: "Săptămâna Curentă",
+                tab_faq: "Întrebări Frecvente",
+                tab_history: "Istoric",
+                tab_setup: "Configurare",
+                tab_manual: "Date Istorice",
+                tab_data: "Date",
+                
+                // Common buttons
+                btn_save: "Salvează",
+                btn_cancel: "Anulează",
+                btn_clear: "Șterge",
+                btn_edit: "Editează",
+                btn_export: "Exportă",
+                btn_import: "Importă",
+                btn_delete: "Șterge",
+                btn_confirm: "Confirmă",
+                
+                // Week actions
+                btn_start_week: "Începe Săptămână Nouă",
+                btn_reset_week: "Șterge și Repornește Săptămâna",
+                btn_complete_week: "Finalizează Săptămâna",
+                btn_lock_set: "Blochează Setul",
+                btn_lock_set_winner: "Blochează Setul {0} cu Câștigător",
+                btn_lock_set_no_winner: "Blochează Setul {0} - Fără Câștigător (Limită Timp)",
+                btn_clear_set: "🗑️ Șterge Setul {0}",
+                btn_auto_select: "Selectare Automată Echitabilă",
+                
+                // Set labels
+                set: "Setul",
+                set_number: "Setul {0}",
+                team: "Echipa",
+                team_number: "Echipa {0}",
+                benched: "Rezervă",
+                winners: "Câștigători",
+                select_bench: "Selectează Jucător Rezervă:",
+                select_winner: "Selectează Echipa Câștigătoare",
+                select_winner_optional: "Selectează Echipa Câștigătoare (Opțional pentru Setul 3):",
+                
+                // Player setup
+                player_setup: "Configurare Jucători",
+                player_name: "Jucător {0}",
+                edit_players: "✏️ Editează Jucători",
+                save_players: "💾 Salvează Jucători",
+                player_names_required: "Te rog introdu toate cele 5 nume de jucători",
+                players_saved: "✓ Jucători salvați cu succes!",
+                
+                // Statistics
+                statistics: "Statistici",
+                rank: "Rang",
+                player: "JUCĂTOR",
+                set1_benches: "SET 1",
+                set2_benches: "SET 2",
+                set3_benches: "SET 3",
+                total_benches: "TOTAL",
+                points: "PUNCTE",
+                visual: "VIZUAL",
+                no_stats: "Încă nu există statistici. Adaugă jucători în tab-ul Configurare.",
+                
+                // Scoring system
+                scoring_system: "Sistem de Punctare Ponderat:",
+                set1_points_info: "Rezerve Set 1: <strong>1.0 punct</strong> fiecare",
+                set2_points_info: "Rezerve Set 2: <strong>1.0 punct</strong> fiecare",
+                set3_points_info: "Rezerve Set 3: <strong>Puncte variabile</strong> bazat pe durata jucată",
+                set3_full: "• Set complet: 1.0 punct",
+                set3_two_thirds: "• 2/3 set: 0.8 puncte",
+                set3_less_half: "• Mai puțin de jumătate: 0.6 puncte",
+                points_column_info: "<strong>Coloana Puncte:</strong> Arată scorul ponderat pentru fiecare jucător. Puncte mai mari = mai mult pe bancă.",
+                scoring_example: "<strong>Exemplu:</strong> 1 rezervă Set 1 = 1.0 pct, 1 rezervă Set 2 = 1.0 pct, 1 rezervă Set 3 (complet) = 1.0 pct",
+                ranking_info: "<strong>Clasament:</strong> Jucători clasați după cel mai mare scor ponderat (cei mai mult pe bancă în top)",
+                
+                // Set 3 duration
+                set3_duration: "Durata Setului 3 Jucat:",
+                duration_full: "Set Complet (1.0 pt)",
+                duration_two_thirds: "2/3 Set (0.8 pct)",
+                duration_less_half: "Mai Puțin de Jumătate (0.6 pct)",
+                
+                // Messages and status
+                msg_no_players: "Niciun jucător configurat. Mergi la tab-ul Configurare pentru a adăuga jucători.",
+                msg_no_active_week: "Nicio săptămână activă. Începe o săptămână nouă.",
+                msg_week_in_progress: "Săptămâna {0} - În Desfășurare",
+                msg_set_locked: "✓ Set blocat",
+                msg_no_winner_time: " - Fără câștigător (limită timp)",
+                msg_select_winner_first: "Te rog selectează o echipă câștigătoare înainte de a bloca setul.",
+                msg_no_active_week_reset: "Nicio săptămână activă de resetat.",
+                msg_week_reset_success: "Resetare săptămână finalizată cu succes",
+                
+                // Current Week - Teams on court
+                teams_on_court: "Echipe pe Teren:",
+                
+                // History
+                history_title: "Istoric Săptămâni Completate",
+                no_history: "Încă nu există săptămâni completate. Finalizează o săptămână pentru a o vedea aici.",
+                week_number: "Săptămâna {0}",
+                completed_on: "Completată pe {0}",
+                
+                // Historical Data
+                manual_entry_title: "Adaugă Date Săptămână Istorică",
+                manual_entry_desc: "Folosește pentru a introduce manual rezultate din săptămânile anterioare jucate înainte de a folosi aplicația.",
+                week_to_add: "Săptămâna de Adăugat:",
+                add_week_data: "Adaugă Date Săptămână",
+                week_added_success: "✓ Datele săptămânii {0} au fost adăugate cu succes!",
+                
+                // Data Management
+                data_management: "Gestionare Date",
+                export_title: "Exportă Date",
+                export_desc: "Descarcă toate datele ca fișier JSON de backup",
+                export_all: "Exportă Toate Datele",
+                import_title: "Importă Date",
+                import_desc: "Restaurează date dintr-un fișier JSON exportat anterior",
+                import_file: "Importă Date din Fișier",
+                choose_file: "Alege Fișier",
+                clear_all_title: "Șterge Toate Datele",
+                clear_all_desc: "⚠️ ZONĂ PERICULOASĂ: Șterge permanent toate datele",
+                clear_all_btn: "Șterge Toate Datele",
+                data_status: "Status:",
+                
+                // Confirmation dialogs
+                confirm_clear_set_title: "⚠️ ATENȚIE: Șterge Setul {0}?",
+                confirm_clear_set_msg: "Aceasta va șterge toate datele pentru Setul {0}:\n\n• Jucător rezervă\n• Repartizarea echipelor\n• Selecția câștigătorului\n• Status blocat\n\nVa trebui să reintroduci toate informațiile pentru acest set.\n\nEști sigur că vrei să continui?",
+                confirm_yes_clear: "Da, Șterge Setul",
+                confirm_reset_week_title: "⚠️ RESETEAZĂ SĂPTĂMÂNA {0}?",
+                confirm_reset_week_msg: "Aceasta va ȘTERGE toate datele curente pentru Săptămâna {0}:\n\n• Toate selecțiile de rezerve\n• Toate repartizările de echipe\n• Toate selecțiile de câștigători\n• Tot progresul seturilor\n\nSăptămâna va fi complet resetată și va trebui să o începi de la zero.\n\nEști sigur că vrei să continui?",
+                confirm_yes_restart: "Da, Șterge și Repornește",
+                confirm_clear_all_title: "⚠️ PERICOL: ȘTERGE TOATE DATELE ⚠️",
+                confirm_clear_all_first: "Aceasta va ȘTERGE PERMANENT:\n\n✗ Toate cele 5 nume de jucători\n✗ Toate statisticile jucătorilor\n✗ Toate săptămânile completate (istoric)\n✗ Săptămâna curentă în desfășurare\n✗ TOT din aplicație\n\n⚠️ Asigură-te că ai exportat un backup mai întâi!\n\nApasă pentru a continua la confirmarea finală.",
+                confirm_continue: "Continuă la Avertismentul Final",
+                confirm_clear_all_final: "🚨 AVERTISMENT FINAL 🚨",
+                confirm_clear_all_final_msg: "Ești pe cale să ștergi TOATE DATELE.\nAceastă acțiune NU POATE FI ANULATĂ!\n\nAi exportat datele ca backup?\n\nApasă pentru a ȘTERGE TOT\nApasă Anulează pentru a păstra datele în siguranță",
+                confirm_delete_everything: "ȘTERGE TOT",
+                confirm_keep_safe: "Păstrează Datele Mele în Siguranță",
+                
+                // Rank badges
+                rank_1st: "1",
+                rank_2nd: "2",
+                rank_3rd: "3",
+                rank_4th: "4",
+                rank_5th: "5",
+                
+                // Section titles
+                section_statistics: "Statistici Rezerve",
+                section_history: "Istoric Meciuri",
+                section_setup: "Configurare Jucători",
+                section_data: "Gestionare Date",
+                section_weekly_match: "Meci Săptămânal",
+                section_faq: "Întrebări Frecvente (FAQ)",
+                
+                // Current Week - Team building
+                build_teams: "Construiește Echipele (Click pe jucători pentru a repartiza):",
+                team_1: "Echipa 1",
+                team_2: "Echipa 2",
+                click_2_players: "Click pe 2 jucători mai jos",
+                available_players: "Jucători Disponibili (click pentru a adăuga la Echipa 1 sau 2):",
+                all_assigned: "✓ Toți jucătorii repartizați!",
+                teams_on_court: "Echipe pe Teren:",
+                
+                // History
+                week: "Săptămâna",
+                result: "Rezultat",
+                no_winner_time_limit: "Fără câștigător (limită timp)",
+                bench: "Rezervă",
+                
+                // Setup tab
+                player_label: "Jucător",
+                enter_name: "Introdu nume",
+                enter_all_names: "Te rog introdu toate cele 5 nume de jucători",
+                players_saved_success: "✓ Jucători salvați cu succes!",
+                
+                // Historical Data tab
+                section_historical_data: "Adaugă Date Săptămână Istorică",
+                historical_data_desc: "Folosește acest formular pentru a introduce manual date din săptămânile anterioare. Acest lucru va actualiza statisticile jucătorilor și va îmbunătăți recomandările viitoare.",
+                week_number: "Număr Săptămână",
+                week_hash: "Săpt. #",
+                enter_week_number: "Introdu numărul săptămânii",
+                bench_player: "Jucător Rezervă",
+                winning_team: "Echipa Câștigătoare",
+                select_player: "Selectează jucător...",
+                save_historical_week: "💾 Salvează Săptămâna Istorică",
+                
+                // Data Management tab
+                section_data_management: "Gestionare Date",
+                data_management_desc: "Datele tale sunt salvate automat în IndexedDB-ul browserului. Folosește aceste unelte pentru a face backup sau restaura datele tale.",
+                export_data_json: "📥 Exportă Date (JSON)",
+                import_data_json: "📤 Importă Date (JSON)",
+                clear_all_data_btn: "🗑️ Șterge Toate Datele",
+            }
+        };
+        
+        // Get current language (default to English)
+        let currentLang = localStorage.getItem('appLanguage') || 'en';
+        
+        // Apply translations to page
+        function applyTranslations() {
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.innerHTML = translations[currentLang][key];
+                }
+            });
+            
+            // Update language toggle styling
+            const langOptions = document.querySelectorAll('.lang-option');
+            langOptions.forEach(option => {
+                const lang = option.getAttribute('data-lang');
+                if (lang === currentLang) {
+                    // Active language - purple background
+                    option.style.background = '#667eea';
+                    option.style.color = '#fff';
+                } else {
+                    // Inactive language - transparent with gray text
+                    option.style.background = 'transparent';
+                    option.style.color = '#a0aec0';
+                }
+            });
+            
+            // Refresh dynamic content if currently visible
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                if (activeTab.id === 'history') {
+                    displayHistory();
+                } else if (activeTab.id === 'setup') {
+                    generateSetup();
+                } else if (activeTab.id === 'manual') {
+                    generateManualEntry();
+                } else if (activeTab.id === 'data') {
+                    generateDataManagement();
+                }
+            }
+            
+            // Note: Dynamic content translation will be handled by individual functions
+            // when they render content using the t() helper function
+        }
+        
+        // Toggle language
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ro' : 'en';
+            localStorage.setItem('appLanguage', currentLang);
+            applyTranslations();
+            generateFAQ(); // Regenerate FAQ with new language
+        }
+        
+        // Helper function to get translated text
+        function t(key, ...args) {
+            let text = translations[currentLang][key] || translations['en'][key] || key;
+            // Replace placeholders {0}, {1}, etc. with arguments
+            args.forEach((arg, index) => {
+                text = text.replace(`{${index}}`, arg);
+            });
+            return text;
+        }
+        
+        // FAQ Content Generator
+        function generateFAQ() {
+            const faqContent = {
+                en: `
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">📊 Scoring System</h3>
+                        
+                        <h4 style="margin-top: 20px;">Q: How are points calculated?</h4>
+                        <p><strong>A:</strong> Players accumulate points each time they sit on the bench:</p>
+                        <ul style="line-height: 1.8;">
+                            <li><strong>Set 1:</strong> 1.0 point per bench</li>
+                            <li><strong>Set 2:</strong> 1.0 point per bench</li>
+                            <li><strong>Set 3:</strong> Variable points based on duration played:
+                                <ul style="margin-top: 5px;">
+                                    <li>Full set: 1.0 point</li>
+                                    <li>2/3 set: 0.8 points</li>
+                                    <li>Less than half: 0.6 points</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">Q: What does "Lower points = more deserving to bench" mean?</h4>
+                        <p><strong>A:</strong> Players with fewer total points have sat on the bench less overall, so they're more deserving to sit next. The system prioritizes fairness by rotating bench duty among all players.</p>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">🎯 Ranking & Priority System</h3>
+                        
+                        <h4 style="margin-top: 20px;">Q: How are players ranked for bench selection?</h4>
+                        <p><strong>A:</strong> The system uses a multi-level priority system:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Priority 0 (LOWEST - Last Option):</strong><br>
+                            Players who already sat on the bench earlier TODAY automatically become the last option (5th choice) for subsequent sets. We strongly avoid having players bench twice in the same day.
+                        </div>
+                        
+                        <div style="background: #e8ecff; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #667eea;">
+                            <strong>Special Rule - Winners Who Are Behind:</strong><br>
+                            If a player WON a previous set today AND is 1+ points behind another specific player, they get priority ONLY over that specific player they're behind.<br><br>
+                            <em>Example: Player A (winner, 2.5 pts) is 1.7 points behind Player B (4.2 pts) → Player A ranks ahead of Player B specifically, but not ahead of players with fewer points.</em>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Priority 1 - Weighted Points:</strong><br>
+                            Lower total points = higher priority to bench next
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Priority 2 - Set-Specific History:</strong><br>
+                            If two players have equal points, the one with fewer benches in that specific set gets priority<br>
+                            <em>Example: For Set 2 selection, prefer the player with fewer Set 2 benches historically</em>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Priority 3 - Total Benches:</strong><br>
+                            If still tied, prefer player with fewer total benches overall
+                        </div>
+                        
+                        <h4 style="margin-top: 20px;">Q: Example ranking scenario?</h4>
+                        <p><strong>After Set 1 with these scores:</strong></p>
+                        <ul style="line-height: 1.8;">
+                            <li>Player 1: 3.4 pts (lost set 1)</li>
+                            <li>Player 2: 2.5 pts (won set 1)</li>
+                            <li>Player 3: 4.2 pts (lost set 1)</li>
+                            <li>Player 4: 1.0 pt (won set 1)</li>
+                            <li>Player 5: 2.6 pts (benched set 1)</li>
+                        </ul>
+                        <p><strong>Ranking for Set 2 bench:</strong></p>
+                        <ol style="line-height: 1.8;">
+                            <li><strong>Player 4</strong> (1.0 pt) - Lowest points overall</li>
+                            <li><strong>Player 1</strong> (3.4 pts) - Lower than Player 3</li>
+                            <li><strong>Player 2</strong> (2.5 pts) - Winner 1.7 pts behind Player 3, gets priority over P3</li>
+                            <li><strong>Player 3</strong> (4.2 pts) - Highest points</li>
+                            <li><strong>Player 5</strong> (2.6 pts) - Already benched = Last option</li>
+                        </ol>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">⚙️ Using the App</h3>
+                        
+                        <h4 style="margin-top: 20px;">Q: How do I start a new week?</h4>
+                        <p><strong>A:</strong> Go to the <strong>Current Week</strong> tab and click "Start New Week". The app will guide you through bench selection, team assignment, and winner selection for each of the 3 sets.</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: Can I change data after selecting a winner?</h4>
+                        <p><strong>A:</strong> Yes! Click the "🗑️ Clear Set" button that appears for any set with data. You'll get a warning confirmation before clearing.</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: What if Set 3 ends early due to time?</h4>
+                        <p><strong>A:</strong> Before selecting the winner for Set 3, choose the duration played:
+                            <ul style="margin-top: 5px; line-height: 1.8;">
+                                <li><strong>Full Set:</strong> Complete set played (1.0 point)</li>
+                                <li><strong>2/3 Set:</strong> About two-thirds played (0.8 points)</li>
+                                <li><strong>Less than Half:</strong> Less than half played (0.6 points)</li>
+                            </ul>
+                            This ensures fair point allocation based on actual bench time.
+                        </p>
+                        
+                        <h4 style="margin-top: 20px;">Q: How do I view history?</h4>
+                        <p><strong>A:</strong> Check the <strong>History</strong> tab to see all completed weeks, including bench assignments and winners for each set.</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: Can I add historical data from previous weeks?</h4>
+                        <p><strong>A:</strong> Yes! Use the <strong>Historical Data</strong> tab to manually enter results from past weeks. This will update player statistics and improve future recommendations.</p>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">💾 Data Management</h3>
+                        
+                        <h4 style="margin-top: 20px;">Q: Is my data saved automatically?</h4>
+                        <p><strong>A:</strong> Yes! All data is automatically saved in your browser's local storage. Your data persists between sessions.</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: Can I backup my data?</h4>
+                        <p><strong>A:</strong> Yes! Go to the <strong>Data</strong> tab and click "Export All Data" to download a JSON backup file. You can later import it using "Import Data from File".</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: What if I switch browsers or devices?</h4>
+                        <p><strong>A:</strong> Export your data from the original browser/device and import it on the new one. Data is stored locally per browser, not in the cloud.</p>
+                        
+                        <h4 style="margin-top: 20px;">Q: How do I reset everything?</h4>
+                        <p><strong>A:</strong> In the <strong>Data</strong> tab, use "Clear All Data" button. ⚠️ Make sure to export a backup first - this action cannot be undone!</p>
+                    </div>
+
+                    <div style="background: #e8ecff; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <p style="margin: 0;"><strong>💡 Tip:</strong> The ranking system is designed to ensure maximum fairness. Trust the algorithm - it considers all historical data and current week context to make the fairest recommendations!</p>
+                    </div>
+                `,
+                ro: `
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">📊 Sistem de Punctare</h3>
+                        
+                        <h4 style="margin-top: 20px;">Î: Cum se calculează punctele?</h4>
+                        <p><strong>R:</strong> Jucătorii acumulează puncte de fiecare dată când stau pe bancă:</p>
+                        <ul style="line-height: 1.8;">
+                            <li><strong>Set 1:</strong> 1.0 punct per rezervă</li>
+                            <li><strong>Set 2:</strong> 1.0 punct per rezervă</li>
+                            <li><strong>Set 3:</strong> Puncte variabile bazate pe durata jucată:
+                                <ul style="margin-top: 5px;">
+                                    <li>Set complet: 1.0 punct</li>
+                                    <li>2/3 set: 0.8 puncte</li>
+                                    <li>Mai puțin de jumătate: 0.6 puncte</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 20px;">Î: Ce înseamnă "Puncte mai mici = mai merituos să fie rezervă"?</h4>
+                        <p><strong>R:</strong> Jucătorii cu mai puține puncte totale au stat mai puțin pe bancă în total, deci merită mai mult să stea următorii. Sistemul prioritizează echitatea prin rotația îndatoririlor de rezervă între toți jucătorii.</p>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">🎯 Sistem de Clasare & Priorități</h3>
+                        
+                        <h4 style="margin-top: 20px;">Î: Cum sunt clasați jucătorii pentru selecția rezervei?</h4>
+                        <p><strong>R:</strong> Sistemul folosește un sistem de priorități multi-nivel:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Prioritatea 0 (CEA MAI MICĂ - Ultima Opțiune):</strong><br>
+                            Jucătorii care au stat deja pe bancă ASTĂZI devin automat ultima opțiune (a 5-a alegere) pentru seturile următoare. Evităm puternic ca jucătorii să fie rezervă de două ori în aceeași zi.
+                        </div>
+                        
+                        <div style="background: #e8ecff; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #667eea;">
+                            <strong>Regulă Specială - Câștigători Care Sunt În Urmă:</strong><br>
+                            Dacă un jucător a CÂȘTIGAT un set anterior astăzi ȘI este cu 1+ puncte în urmă față de un alt jucător specific, primește prioritate DOAR față de acel jucător specific.<br><br>
+                            <em>Exemplu: Jucătorul A (câștigător, 2.5 pct) este cu 1.7 puncte în urmă față de Jucătorul B (4.2 pct) → Jucătorul A se clasează înaintea Jucătorului B în mod specific, dar nu înaintea jucătorilor cu mai puține puncte.</em>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Prioritatea 1 - Puncte Ponderate:</strong><br>
+                            Puncte totale mai mici = prioritate mai mare pentru rezervă
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Prioritatea 2 - Istoric Specific Setului:</strong><br>
+                            Dacă doi jucători au puncte egale, cel cu mai puține rezerve în acel set specific primește prioritate<br>
+                            <em>Exemplu: Pentru selecția Setului 2, preferă jucătorul cu mai puține rezerve Set 2 istoric</em>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
+                            <strong>Prioritatea 3 - Total Rezerve:</strong><br>
+                            Dacă încă egal, preferă jucătorul cu mai puține rezerve totale în general
+                        </div>
+                        
+                        <h4 style="margin-top: 20px;">Î: Scenariu exemplu de clasare?</h4>
+                        <p><strong>După Setul 1 cu aceste scoruri:</strong></p>
+                        <ul style="line-height: 1.8;">
+                            <li>Jucător 1: 3.4 pct (pierdut setul 1)</li>
+                            <li>Jucător 2: 2.5 pct (câștigat setul 1)</li>
+                            <li>Jucător 3: 4.2 pct (pierdut setul 1)</li>
+                            <li>Jucător 4: 1.0 pct (câștigat setul 1)</li>
+                            <li>Jucător 5: 2.6 pct (rezervă setul 1)</li>
+                        </ul>
+                        <p><strong>Clasament pentru rezerva Setului 2:</strong></p>
+                        <ol style="line-height: 1.8;">
+                            <li><strong>Jucător 4</strong> (1.0 pct) - Cele mai puține puncte în total</li>
+                            <li><strong>Jucător 1</strong> (3.4 pct) - Mai puțin decât Jucătorul 3</li>
+                            <li><strong>Jucător 2</strong> (2.5 pct) - Câștigător cu 1.7 pct în urmă față de Jucătorul 3, primește prioritate față de J3</li>
+                            <li><strong>Jucător 3</strong> (4.2 pct) - Cele mai multe puncte</li>
+                            <li><strong>Jucător 5</strong> (2.6 pct) - Deja rezervă = Ultima opțiune</li>
+                        </ol>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">⚙️ Folosirea Aplicației</h3>
+                        
+                        <h4 style="margin-top: 20px;">Î: Cum încep o săptămână nouă?</h4>
+                        <p><strong>R:</strong> Mergi la tab-ul <strong>Săptămâna Curentă</strong> și apasă "Începe Săptămână Nouă". Aplicația te va ghida prin selecția rezervei, repartizarea echipelor și selecția câștigătorului pentru fiecare dintre cele 3 seturi.</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Pot schimba datele după selectarea câștigătorului?</h4>
+                        <p><strong>R:</strong> Da! Apasă butonul "🗑️ Șterge Setul" care apare pentru orice set cu date. Vei primi o confirmare de avertizare înainte de ștergere.</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă Setul 3 se termină devreme din cauza timpului?</h4>
+                        <p><strong>R:</strong> Înainte de a selecta câștigătorul pentru Setul 3, alege durata jucată:
+                            <ul style="margin-top: 5px; line-height: 1.8;">
+                                <li><strong>Set Complet:</strong> Set complet jucat (1.0 punct)</li>
+                                <li><strong>2/3 Set:</strong> Aproximativ două treimi jucat (0.8 puncte)</li>
+                                <li><strong>Mai Puțin de Jumătate:</strong> Mai puțin de jumătate jucat (0.6 puncte)</li>
+                            </ul>
+                            Acest lucru asigură alocarea corectă a punctelor bazată pe timpul efectiv pe bancă.
+                        </p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Cum văd istoricul?</h4>
+                        <p><strong>R:</strong> Verifică tab-ul <strong>Istoric</strong> pentru a vedea toate săptămânile completate, inclusiv repartizările de rezerve și câștigătorii pentru fiecare set.</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Pot adăuga date istorice din săptămânile anterioare?</h4>
+                        <p><strong>R:</strong> Da! Folosește tab-ul <strong>Date Istorice</strong> pentru a introduce manual rezultatele din săptămânile trecute. Acest lucru va actualiza statisticile jucătorilor și va îmbunătăți recomandările viitoare.</p>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: #667eea; margin-top: 0;">💾 Gestionarea Datelor</h3>
+                        
+                        <h4 style="margin-top: 20px;">Î: Datele mele sunt salvate automat?</h4>
+                        <p><strong>R:</strong> Da! Toate datele sunt salvate automat în memoria locală a browserului tău. Datele tale persistă între sesiuni.</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Pot face backup datelor mele?</h4>
+                        <p><strong>R:</strong> Da! Mergi la tab-ul <strong>Date</strong> și apasă "Exportă Toate Datele" pentru a descărca un fișier JSON de backup. Poți ulterior să-l imporți folosind "Importă Date din Fișier".</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă schimb browser-ul sau dispozitivul?</h4>
+                        <p><strong>R:</strong> Exportă datele din browser-ul/dispozitivul original și importă-le pe cel nou. Datele sunt stocate local per browser, nu în cloud.</p>
+                        
+                        <h4 style="margin-top: 20px;">Î: Cum resetez totul?</h4>
+                        <p><strong>R:</strong> În tab-ul <strong>Date</strong>, folosește butonul "Șterge Toate Datele". ⚠️ Asigură-te că exporți un backup mai întâi - această acțiune nu poate fi anulată!</p>
+                    </div>
+
+                    <div style="background: #e8ecff; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <p style="margin: 0;"><strong>💡 Sfat:</strong> Sistemul de clasare este conceput pentru a asigura echitate maximă. Ai încredere în algoritm - ia în considerare toate datele istorice și contextul săptămânii curente pentru a face cele mai echitabile recomandări!</p>
+                    </div>
+                `
+            };
+            
+            const container = document.getElementById('faqContainer');
+            if (container) {
+                container.innerHTML = faqContent[currentLang];
+            }
+        }
+        
+        // Initialize language toggle button
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle clicks on language options
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedLang = this.getAttribute('data-lang');
+                    if (selectedLang !== currentLang) {
+                        toggleLanguage();
+                    }
+                });
+            });
+            
+            // Apply translations on initial load
+            applyTranslations();
+            
+            // Generate FAQ content
+            generateFAQ();
+            
+            // Note: generateSetup() is called in the main initialization after DB is ready
+        });
+
     </script>
 </body>
 </html>
