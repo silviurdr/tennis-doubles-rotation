@@ -667,6 +667,35 @@
             font-weight: 600;
         }
 
+        .week-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .week-card-header h3 {
+            margin: 0;
+        }
+
+        .delete-week-btn {
+            background: #e85555;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .delete-week-btn:hover {
+            background: #dc3545;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
         .week-sets {
             display: grid;
             gap: 12px;
@@ -1483,6 +1512,29 @@
             }
         }
 
+        async function deleteFromStore(storeName, key) {
+            try {
+                if (SUPABASE_ENABLED && supabase) {
+                    // Delete from Supabase
+                    if (storeName === 'weeks') {
+                        await supabase.deleteWeek(key);
+                    }
+                } else {
+                    // Delete from IndexedDB (fallback)
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    await store.delete(key);
+                    return await new Promise((resolve, reject) => {
+                        tx.oncomplete = () => resolve(true);
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
+            } catch (error) {
+                console.error('Error deleting from store:', storeName, error);
+                throw error;
+            }
+        }
+
         // Tab navigation
         document.querySelectorAll('.nav-tab').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -1770,17 +1822,41 @@
         // Rank eligible players by fairness algorithm
         function rankPlayersByFairness(eligiblePlayers, setNumber, currentWeek = null) {
             const ranked = [...eligiblePlayers].sort((a, b) => {
-                // Calculate weighted scores first
+                // Check who benched earlier TODAY and in which set
+                let aBenchedSetNumber = -1;
+                let bBenchedSetNumber = -1;
+                if (currentWeek) {
+                    for (let i = 0; i < setNumber - 1; i++) {
+                        if (currentWeek.sets[i].bench === a.id) {
+                            aBenchedSetNumber = i + 1; // Store the set number (1-indexed)
+                        }
+                        if (currentWeek.sets[i].bench === b.id) {
+                            bBenchedSetNumber = i + 1;
+                        }
+                    }
+                }
+                
+                const aBenchedThisWeek = aBenchedSetNumber > 0;
+                const bBenchedThisWeek = bBenchedSetNumber > 0;
+                
+                // ═══════════════════════════════════════════════════════════════════
+                // PRIORITY 0 (ABSOLUTE LAST): Players who BENCHED earlier TODAY
+                // Latest benched = last priority (position 5), earliest benched = first among benched (position 3)
+                // This takes precedence over ALL other factors
+                // ═══════════════════════════════════════════════════════════════════
+                if (aBenchedThisWeek && !bBenchedThisWeek) return 1;  // A benched = goes after non-benched
+                if (bBenchedThisWeek && !aBenchedThisWeek) return -1; // B benched = goes after non-benched
+                if (aBenchedThisWeek && bBenchedThisWeek) {
+                    // Both benched - latest benched should be LAST
+                    // So if A was benched later (higher set number), A should come AFTER B (return positive)
+                    return bBenchedSetNumber - aBenchedSetNumber;
+                }
+                
+                // From here on, we only compare players who have NOT been benched this week
+                
+                // Calculate weighted scores
                 const aWeightedScore = (a.set1Benches * 1.0) + (a.set2Benches * 1.0) + (a.set3Points || 0) + (a.set4Points || 0);
                 const bWeightedScore = (b.set1Benches * 1.0) + (b.set2Benches * 1.0) + (b.set3Points || 0) + (b.set4Points || 0);
-                
-                // Check who benched earlier TODAY
-                let aBenchedThisWeek = false;
-                let bBenchedThisWeek = false;
-                if (currentWeek) {
-                    aBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === a.id);
-                    bBenchedThisWeek = currentWeek.sets.slice(0, setNumber - 1).some(s => s.bench === b.id);
-                }
                 
                 // Check who was a winner in previous set(s) TODAY
                 let aWasWinnerThisWeek = false;
@@ -1798,13 +1874,7 @@
                 }
                 
                 // ═══════════════════════════════════════════════════════════════════
-                // PRIORITY 0 (ABSOLUTE LAST): Players who BENCHED earlier TODAY
-                // ═══════════════════════════════════════════════════════════════════
-                if (aBenchedThisWeek && !bBenchedThisWeek) return 1;  // A benched = last
-                if (bBenchedThisWeek && !aBenchedThisWeek) return -1; // B benched = last
-                
-                // ═══════════════════════════════════════════════════════════════════
-                // SPECIAL RULE: Winner who is 1+ behind another specific player
+                // PRIORITY 1: Winner who is 1+ behind another specific player
                 // ═══════════════════════════════════════════════════════════════════
                 // If A is a winner and 1+ behind B specifically, A gets priority over B
                 if (aWasWinnerThisWeek && bWeightedScore - aWeightedScore >= 1.0) {
@@ -1817,7 +1887,7 @@
                 }
                 
                 // ═══════════════════════════════════════════════════════════════════
-                // PRIORITY 1: Normal weighted score comparison
+                // PRIORITY 2: Normal weighted score comparison
                 // ═══════════════════════════════════════════════════════════════════
                 // Lower score = higher priority (more deserving to bench)
                 if (aWeightedScore !== bWeightedScore) {
@@ -1961,58 +2031,70 @@
                             </div>`;
                         });
                     } else {
-                        // For Set 2 and 3, categorize by winners/losers/previous bencher
-                        // For Set 2 and 3, categorize by winners/losers/previous bencher
-                        // Categorize players
-                        const losersLastSet = players.filter(p => 
-                            !winnersLastSet.includes(p.id) && p.id !== previousBencher
-                        );
-                        const winnersPlayers = players.filter(p => winnersLastSet.includes(p.id));
-                        const previousBencherPlayer = previousBencher ? players.find(p => p.id === previousBencher) : null;
-
-                        // Rank losers by fairness (positions 1-2)
-                        const rankedLosers = rankPlayersByFairness(losersLastSet, set.number, currentWeek);
-                        
-                        // Rank winners by fairness (positions 3-4)
-                        const rankedWinners = rankPlayersByFairness(winnersPlayers, set.number, currentWeek);
-
-                        // Display losers first (positions 1-2)
-                        rankedLosers.forEach((player, index) => {
-                            const isSelected = set.bench === player.id;
-                            const rank = index + 1;
-                            const rankClass = rank <= 2 ? `rank-${rank}` : '';
-                            const rankLabel = rank === 1 ? t('rank_1st') : rank === 2 ? t('rank_2nd') : '';
-                            
-                            html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
-                                onclick="selectBench(${set.number}, ${player.id})">
-                                ${player.name}
-                                ${rankLabel ? `<span class="rank-badge">${rankLabel}</span>` : ''}
-                            </div>`;
-                        });
-
-                        // Display winners (positions 3-4)
-                        rankedWinners.forEach((player, index) => {
-                            const isSelected = set.bench === player.id;
-                            const rank = index + 3; // Position 3 or 4
-                            const rankClass = `rank-${rank}`;
-                            const rankLabel = rank === 3 ? t('rank_3rd') : t('rank_4th');
-                            
-                            html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
-                                onclick="selectBench(${set.number}, ${player.id})">
-                                ${player.name}
-                                ${rankLabel ? `<span class="rank-badge">${rankLabel}</span>` : ''}
-                            </div>`;
-                        });
-
-                        // Display previous bencher last (position 5, now clickable)
-                        if (previousBencherPlayer) {
-                            const isSelected = set.bench === previousBencherPlayer.id;
-                            html += `<div class="bench-option rank-5 ${isSelected ? 'selected' : ''}" 
-                                onclick="selectBench(${set.number}, ${previousBencherPlayer.id})">
-                                ${previousBencherPlayer.name}
-                                <span class="rank-badge">${t('rank_5th')}</span>
-                            </div>`;
+                        // For Set 2+, rank all players by fairness (respecting benching order)
+                        // Get all players benched earlier today (in order)
+                        const benchedThisWeek = [];
+                        for (let j = 0; j < set.number - 1; j++) {
+                            if (currentWeek.sets[j].bench) {
+                                benchedThisWeek.push({
+                                    playerId: currentWeek.sets[j].bench,
+                                    setNumber: j + 1
+                                });
+                            }
                         }
+                        
+                        // Separate players into: not benched today vs benched today
+                        const notBenchedToday = players.filter(p => 
+                            !benchedThisWeek.some(b => b.playerId === p.id)
+                        );
+                        
+                        // Rank ALL non-benched players together by fairness (weighted points priority)
+                        const rankedNotBenched = rankPlayersByFairness(notBenchedToday, set.number, currentWeek);
+                        
+                        // For benched players, keep them in chronological order (earliest benched first)
+                        const rankedBenched = benchedThisWeek.map(b => 
+                            players.find(p => p.id === b.playerId)
+                        ).filter(p => p); // Remove nulls, keep chronological order
+
+                        let displayRank = 1;
+                        
+                        // Display all non-benched players first (ranked by weighted points)
+                        rankedNotBenched.forEach((player) => {
+                            const isSelected = set.bench === player.id;
+                            const rankClass = displayRank <= 5 ? `rank-${displayRank}` : '';
+                            let rankLabel = '';
+                            if (displayRank === 1) rankLabel = t('rank_1st');
+                            else if (displayRank === 2) rankLabel = t('rank_2nd');
+                            else if (displayRank === 3) rankLabel = t('rank_3rd');
+                            else if (displayRank === 4) rankLabel = t('rank_4th');
+                            else if (displayRank === 5) rankLabel = t('rank_5th');
+                            
+                            html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
+                                onclick="selectBench(${set.number}, ${player.id})">
+                                ${player.name}
+                                ${rankLabel ? `<span class="rank-badge">${rankLabel}</span>` : ''}
+                            </div>`;
+                            displayRank++;
+                        });
+
+                        // Display benched players last (ordered by when they were benched)
+                        rankedBenched.forEach((player) => {
+                            const isSelected = set.bench === player.id;
+                            const rankClass = displayRank <= 5 ? `rank-${displayRank}` : '';
+                            let rankLabel = '';
+                            if (displayRank === 1) rankLabel = t('rank_1st');
+                            else if (displayRank === 2) rankLabel = t('rank_2nd');
+                            else if (displayRank === 3) rankLabel = t('rank_3rd');
+                            else if (displayRank === 4) rankLabel = t('rank_4th');
+                            else if (displayRank === 5) rankLabel = t('rank_5th');
+                            
+                            html += `<div class="bench-option ${rankClass} ${isSelected ? 'selected' : ''}" 
+                                onclick="selectBench(${set.number}, ${player.id})">
+                                ${player.name}
+                                ${rankLabel ? `<span class="rank-badge">${rankLabel}</span>` : ''}
+                            </div>`;
+                            displayRank++;
+                        });
                     }
 
                     html += `</div></div>`;
@@ -2155,8 +2237,8 @@
                                 </div>
                             </div>`;
 
-                            // For Set 3, allow locking without winner
-                            if (set.number === 3) {
+                            // For Set 3 and Set 4, allow locking without winner
+                            if (set.number === 3 || set.number === 4) {
                                 html += `<div style="display: flex; gap: 10px; margin-top: 10px;">`;
                                 if (set.winners) {
                                     html += `<button class="btn btn-success" onclick="lockSet(${set.number})">${t('btn_lock_set_winner', set.number)}</button>`;
@@ -2818,7 +2900,12 @@ Are you sure you want to continue?`;
             let html = '';
             weeks.sort((a, b) => b.weekNumber - a.weekNumber).forEach(week => {
                 html += `<div class="week-card">
-                    <h3>${t('week')} ${week.weekNumber}</h3>
+                    <div class="week-card-header">
+                        <h3>${t('week')} ${week.weekNumber}</h3>
+                        <button class="delete-week-btn" onclick="deleteWeek(${week.weekNumber})">
+                            🗑️ Delete Week
+                        </button>
+                    </div>
                     <div class="week-sets">`;
 
                 week.sets.forEach(set => {
@@ -2871,6 +2958,92 @@ Are you sure you want to continue?`;
             });
 
             document.getElementById('historyContainer').innerHTML = html;
+        }
+
+        // Delete a specific week from history
+        async function deleteWeek(weekNumber) {
+            const confirmed = confirm(`Are you sure you want to delete Week ${weekNumber}?\n\nThis will permanently remove all data for this week, including:\n- Bench assignments\n- Team compositions\n- Match results\n\nThis action cannot be undone.`);
+            
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                // Get all weeks
+                const weeks = await getAllFromStore('weeks');
+                
+                // Find and remove the specified week
+                const weekToDelete = weeks.find(w => w.weekNumber === weekNumber);
+                if (!weekToDelete) {
+                    alert('Week not found!');
+                    return;
+                }
+
+                // Remove the week from IndexedDB (using weekNumber as key)
+                await deleteFromStore('weeks', weekNumber);
+
+                // Update player statistics (subtract the deleted week's data)
+                const players = await loadPlayers();
+                
+                // Get set duration point values from the deleted week
+                const set3Duration = weekToDelete.sets[2] ? (weekToDelete.sets[2].set3Duration || 'full') : 'full';
+                const set3PointValue = set3Duration === 'full' ? 1.0 :
+                                       set3Duration === 'two-thirds' ? 0.8 : 0.6;
+
+                const set4Duration = weekToDelete.sets[3] ? (weekToDelete.sets[3].set4Duration || 'full') : 'full';
+                const set4PointValue = set4Duration === 'full' ? 1.0 :
+                                       set4Duration === 'two-thirds' ? 0.8 : 0.6;
+                
+                weekToDelete.sets.forEach(set => {
+                    if (set.bench) {
+                        const player = players.find(p => p.id === set.bench);
+                        if (player) {
+                            // Only decrease total benches if not a late arrival in Set 1
+                            if (set.number !== 1 || !set.arrivedLate) {
+                                player.totalBenches = Math.max(0, player.totalBenches - 1);
+                            }
+                            
+                            // Decrease set-specific benches and points
+                            if (set.number === 1) {
+                                // Only decrease if player didn't arrive late
+                                if (!set.arrivedLate) {
+                                    player.set1Benches = Math.max(0, player.set1Benches - 1);
+                                }
+                            } else if (set.number === 2) {
+                                player.set2Benches = Math.max(0, player.set2Benches - 1);
+                            } else if (set.number === 3) {
+                                if (player.set3Benches !== undefined) {
+                                    player.set3Benches = Math.max(0, player.set3Benches - 1);
+                                }
+                                // Decrease set3Points
+                                if (player.set3Points !== undefined) {
+                                    player.set3Points = Math.max(0, player.set3Points - set3PointValue);
+                                }
+                            } else if (set.number === 4) {
+                                if (player.set4Benches !== undefined) {
+                                    player.set4Benches = Math.max(0, player.set4Benches - 1);
+                                }
+                                // Decrease set4Points
+                                if (player.set4Points !== undefined) {
+                                    player.set4Points = Math.max(0, player.set4Points - set4PointValue);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Save updated player data with correct structure
+                await saveToStore('players', { id: 'playerList', players: players });
+
+                // Refresh displays
+                await displayHistory();
+                await displayStats();
+
+                alert(`Week ${weekNumber} has been successfully deleted.`);
+            } catch (error) {
+                console.error('Error deleting week:', error);
+                alert('Error deleting week. Please try again.');
+            }
         }
 
         // Manual historical data entry
