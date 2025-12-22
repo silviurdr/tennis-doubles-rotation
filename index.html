@@ -613,32 +613,34 @@
         /* Set columns */
         .stats-table th:nth-child(3),
         .stats-table th:nth-child(4),
-        .stats-table th:nth-child(5) {
+        .stats-table th:nth-child(5),
+        .stats-table th:nth-child(6) {
             width: 10%;
         }
 
         .stats-table td:nth-child(3),
         .stats-table td:nth-child(4),
-        .stats-table td:nth-child(5) {
+        .stats-table td:nth-child(5),
+        .stats-table td:nth-child(6) {
             width: 10%;
             color: #333;
         }
 
         /* Total column */
-        .stats-table th:nth-child(6),
-        .stats-table td:nth-child(6) {
+        .stats-table th:nth-child(7),
+        .stats-table td:nth-child(7) {
             width: 12%;
             font-weight: 600;
             color: #333;
         }
 
         /* Points column - darker black with semi-bold like FlashScore */
-        .stats-table th:nth-child(7),
-        .stats-table td:nth-child(7) {
+        .stats-table th:nth-child(8),
+        .stats-table td:nth-child(8) {
             width: 20%;
         }
 
-        .stats-table td:nth-child(7) {
+        .stats-table td:nth-child(8) {
             font-weight: 600;
             color: #000;
             font-size: 13px;
@@ -2736,7 +2738,7 @@ Are you sure you want to continue?`;
                             <th>${t('set1_benches')}</th>
                             <th>${t('set2_benches')}</th>
                             <th>${t('set3_benches')}</th>
-                            <th>SET 4</th>
+                            <th>${t('set4_benches')}</th>
                             <th>${t('total_benches')}</th>
                             <th>${t('points')}</th>
                         </tr>
@@ -3651,9 +3653,10 @@ Click Cancel to keep your data safe`;
                 statistics: "Statistics",
                 rank: "Rank",
                 player: "PLAYER",
-                set1_benches: "SET 1",
-                set2_benches: "SET 2",
-                set3_benches: "SET 3",
+                set1_benches: "SET<br>1",
+                set2_benches: "SET<br>2",
+                set3_benches: "SET<br>3",
+                set4_benches: "SET<br>4",
                 total_benches: "TOTAL",
                 points: "POINTS",
                 visual: "VISUAL",
@@ -3848,9 +3851,10 @@ Click Cancel to keep your data safe`;
                 statistics: "Statistici",
                 rank: "Rang",
                 player: "JUCĂTOR",
-                set1_benches: "SET 1",
-                set2_benches: "SET 2",
-                set3_benches: "SET 3",
+                set1_benches: "SET<br>1",
+                set2_benches: "SET<br>2",
+                set3_benches: "SET<br>3",
+                set4_benches: "SET<br>4",
                 total_benches: "TOTAL",
                 points: "PUNCTE",
                 visual: "VIZUAL",
