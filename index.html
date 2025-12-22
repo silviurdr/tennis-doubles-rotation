@@ -1219,16 +1219,42 @@
 
     <script>
         // ==============================================
-        // SUPABASE CONFIGURATION
+        // SUPABASE CONFIGURATION - CLOUD SYNC
         // ==============================================
-        // TODO: Replace these with your actual Supabase credentials
-        // Get them from: https://supabase.com → Your Project → Settings → API
-        
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; // e.g., 'https://xxxxx.supabase.co'
-        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE'; // Your anon/public key
-        
+        //
+        // INSTRUCTIONS TO ENABLE CLOUD SYNC:
+        //
+        // 1. Create a Supabase project at https://supabase.com
+        // 2. In SQL Editor, run this to create the table:
+        //
+        //    CREATE TABLE tennis_data (
+        //      id BIGSERIAL PRIMARY KEY,
+        //      data_type TEXT NOT NULL UNIQUE,
+        //      content JSONB,
+        //      updated_at TIMESTAMPTZ DEFAULT NOW()
+        //    );
+        //
+        //    ALTER TABLE tennis_data ENABLE ROW LEVEL SECURITY;
+        //
+        //    CREATE POLICY "Enable all access for all users" ON tennis_data
+        //      FOR ALL USING (true) WITH CHECK (true);
+        //
+        //    CREATE INDEX idx_tennis_data_type ON tennis_data(data_type);
+        //
+        // 3. Go to Settings → API and copy:
+        //    - Project URL (SUPABASE_URL below)
+        //    - anon public key (SUPABASE_KEY below)
+        //
+        // 4. Replace the values below with your credentials
+        // 5. Set SUPABASE_ENABLED = true
+        //
+        // ==============================================
+
+        const SUPABASE_URL = 'https://qmvuknszmuhmwareqepu.supabase.co'; // e.g., 'https://xxxxxxxxxxxxx.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdnVrbnN6bXVobXdhcmVxZXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MTc3NzksImV4cCI6MjA4MTk5Mzc3OX0.oYA55gHmXChQdgo-5JMUrCIJ1LU52vtAaIWl1otTo00'; // Your anon/public key (safe to expose publicly)
+
         // Set this to true once you've added your Supabase credentials above
-        const SUPABASE_ENABLED = false;
+        const SUPABASE_ENABLED = true; // Change to true after adding credentials
         
         // ==============================================
         // SUPABASE CLIENT (Simple fetch-based)
@@ -1320,7 +1346,11 @@
             
             async getAllWeeks() {
                 const weeks = await this.getByType('weeks');
-                return weeks || [];
+                // Ensure we always return an array
+                if (!weeks) return [];
+                if (Array.isArray(weeks)) return weeks;
+                // If it's a single object somehow, wrap it in an array
+                return [weeks];
             }
             
             async saveWeeks(weeksArray) {
@@ -1427,9 +1457,29 @@
         async function saveToStore(storeName, data) {
             try {
                 if (SUPABASE_ENABLED && supabase) {
-                    // Save to Supabase
-                    await supabase.upsertByType(storeName, data);
-                    console.log(`✅ Saved to Supabase: ${storeName}`);
+                    // Special handling for weeks - store as array in Supabase
+                    if (storeName === 'weeks') {
+                        // Get existing weeks array
+                        const existingWeeks = await supabase.getAllWeeks();
+                        // Find if this week already exists
+                        const weekIndex = existingWeeks.findIndex(w => w.weekNumber === data.weekNumber);
+
+                        if (weekIndex >= 0) {
+                            // Update existing week
+                            existingWeeks[weekIndex] = data;
+                        } else {
+                            // Add new week
+                            existingWeeks.push(data);
+                        }
+
+                        // Save the entire weeks array
+                        await supabase.saveWeeks(existingWeeks);
+                        console.log(`✅ Saved week ${data.weekNumber} to Supabase`);
+                    } else {
+                        // Save other data types normally
+                        await supabase.upsertByType(storeName, data);
+                        console.log(`✅ Saved to Supabase: ${storeName}`);
+                    }
                 } else {
                     // Save to IndexedDB (fallback)
                     const tx = db.transaction(storeName, 'readwrite');
@@ -1495,7 +1545,14 @@
             try {
                 if (SUPABASE_ENABLED && supabase) {
                     // Clear in Supabase
-                    await supabase.upsertByType(storeName, null);
+                    if (storeName === 'weeks') {
+                        // Clear weeks by saving an empty array
+                        await supabase.saveWeeks([]);
+                        console.log(`✅ Cleared all weeks from Supabase`);
+                    } else {
+                        await supabase.upsertByType(storeName, null);
+                        console.log(`✅ Cleared ${storeName} from Supabase`);
+                    }
                 } else {
                     // Clear in IndexedDB (fallback)
                     const tx = db.transaction(storeName, 'readwrite');
@@ -1517,7 +1574,13 @@
                 if (SUPABASE_ENABLED && supabase) {
                     // Delete from Supabase
                     if (storeName === 'weeks') {
-                        await supabase.deleteWeek(key);
+                        // Get existing weeks array
+                        const existingWeeks = await supabase.getAllWeeks();
+                        // Filter out the week to delete
+                        const updatedWeeks = existingWeeks.filter(w => w.weekNumber !== key);
+                        // Save the updated weeks array
+                        await supabase.saveWeeks(updatedWeeks);
+                        console.log(`✅ Deleted week ${key} from Supabase`);
                     }
                 } else {
                     // Delete from IndexedDB (fallback)
@@ -3317,7 +3380,9 @@ Are you sure you want to continue?`;
 
             // Check if week already exists
             const weeks = await getAllFromStore('weeks');
-            const existingWeek = weeks.find(w => w.weekNumber === weekNumber);
+            // Ensure weeks is always an array
+            const weeksArray = Array.isArray(weeks) ? weeks : [];
+            const existingWeek = weeksArray.find(w => w.weekNumber === weekNumber);
             
             if (existingWeek) {
                 if (!confirm(`Week ${weekNumber} already exists. Do you want to overwrite it?`)) {
