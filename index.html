@@ -1305,13 +1305,27 @@
             }
             
             async upsertByType(type, content) {
-                // First, try to get existing
-                const existing = await this.getByType(type);
-                
-                if (existing) {
-                    // Update existing
-                    const endpoint = `${this.url}/rest/v1/tennis_data?data_type=eq.${type}`;
-                    await fetch(endpoint, {
+                // Check if record exists first to avoid 409 conflicts
+                const checkEndpoint = `${this.url}/rest/v1/tennis_data?data_type=eq.${type}&select=id`;
+                const checkResponse = await fetch(checkEndpoint, {
+                    headers: {
+                        'apikey': this.key,
+                        'Authorization': `Bearer ${this.key}`
+                    }
+                });
+
+                if (!checkResponse.ok) {
+                    const errorText = await checkResponse.text();
+                    throw new Error(`Supabase check error: ${checkResponse.status} ${errorText}`);
+                }
+
+                const existingRecords = await checkResponse.json();
+                const recordExists = existingRecords && existingRecords.length > 0;
+
+                if (recordExists) {
+                    // Record exists, do an update (PATCH)
+                    const updateEndpoint = `${this.url}/rest/v1/tennis_data?data_type=eq.${type}`;
+                    const updateResponse = await fetch(updateEndpoint, {
                         method: 'PATCH',
                         headers: {
                             'apikey': this.key,
@@ -1324,10 +1338,17 @@
                             updated_at: new Date().toISOString()
                         })
                     });
+
+                    if (!updateResponse.ok) {
+                        const errorText = await updateResponse.text();
+                        throw new Error(`Supabase update error: ${updateResponse.status} ${errorText}`);
+                    }
+
+                    return updateResponse.json();
                 } else {
-                    // Insert new
-                    const endpoint = `${this.url}/rest/v1/tennis_data`;
-                    await fetch(endpoint, {
+                    // Record doesn't exist, do an insert (POST)
+                    const insertEndpoint = `${this.url}/rest/v1/tennis_data`;
+                    const insertResponse = await fetch(insertEndpoint, {
                         method: 'POST',
                         headers: {
                             'apikey': this.key,
@@ -1341,6 +1362,13 @@
                             updated_at: new Date().toISOString()
                         })
                     });
+
+                    if (!insertResponse.ok) {
+                        const errorText = await insertResponse.text();
+                        throw new Error(`Supabase insert error: ${insertResponse.status} ${errorText}`);
+                    }
+
+                    return insertResponse.json();
                 }
             }
             
@@ -2955,8 +2983,14 @@ Are you sure you want to continue?`;
             const players = await loadPlayers();
 
             if (!weeks || weeks.length === 0) {
-                document.getElementById('historyContainer').innerHTML = 
+                document.getElementById('historyContainer').innerHTML =
                     `<div class="no-data"><div class="no-data-icon">📜</div><p>${t('no_history')}</p></div>`;
+                return;
+            }
+
+            if (!players || players.length === 0) {
+                document.getElementById('historyContainer').innerHTML =
+                    `<div class="status-warning">Error: No players found. Please set up players first.</div>`;
                 return;
             }
 
@@ -2971,23 +3005,33 @@ Are you sure you want to continue?`;
                     </div>
                     <div class="week-sets">`;
 
-                week.sets.forEach(set => {
+                // Only show the sets that were actually played based on numberOfSets
+                const numberOfSets = week.numberOfSets || 3;
+                const setsToDisplay = week.sets.slice(0, numberOfSets);
+
+                setsToDisplay.forEach(set => {
                     const benchPlayer = players.find(p => p.id === set.bench);
-                    
+
                     let winnerDisplay = '';
                     if (!set.winners) {
                         winnerDisplay = t('no_winner_time_limit');
                     } else if (set.team1 && set.team2) {
-                        const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
-                        const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+                        const team1Players = set.team1.map(id => {
+                            const player = players.find(p => p.id === id);
+                            return player ? player.name : `Player ${id}`;
+                        });
+                        const team2Players = set.team2.map(id => {
+                            const player = players.find(p => p.id === id);
+                            return player ? player.name : `Player ${id}`;
+                        });
                         const isTeam1Winner = JSON.stringify([...set.winners].sort()) === JSON.stringify([...set.team1].sort());
-                        winnerDisplay = isTeam1Winner ? 
-                            `${t('team_1')}: ${team1Players.join(' & ')}` : 
+                        winnerDisplay = isTeam1Winner ?
+                            `${t('team_1')}: ${team1Players.join(' & ')}` :
                             `${t('team_2')}: ${team2Players.join(' & ')}`;
                     } else {
                         const winnerNames = players.filter(p => set.winners && set.winners.includes(p.id))
                             .map(p => p.name).join(' & ');
-                        winnerDisplay = winnerNames;
+                        winnerDisplay = winnerNames || 'Unknown';
                     }
 
                     html += `<div class="week-set">
@@ -2995,18 +3039,24 @@ Are you sure you want to continue?`;
                             <span>${t('set')} ${set.number}</span>
                             <span class="winner-badge${!set.winners ? '' : ''}">${set.winners ? t('winners') : t('result')}: ${winnerDisplay}</span>
                         </div>`;
-                    
+
                     if (set.team1 && set.team2) {
-                        const team1Players = set.team1.map(id => players.find(p => p.id === id).name);
-                        const team2Players = set.team2.map(id => players.find(p => p.id === id).name);
+                        const team1Players = set.team1.map(id => {
+                            const player = players.find(p => p.id === id);
+                            return player ? player.name : `Player ${id}`;
+                        });
+                        const team2Players = set.team2.map(id => {
+                            const player = players.find(p => p.id === id);
+                            return player ? player.name : `Player ${id}`;
+                        });
                         html += `
                             <div style="margin-top: 8px; font-size: 0.9em;">
                                 <div>${t('team_1')}: ${team1Players.join(' & ')}</div>
                                 <div>${t('team_2')}: ${team2Players.join(' & ')}</div>
                             </div>`;
                     }
-                    
-                    html += `<div style="margin-top: 5px;">${t('bench')}: <strong>${benchPlayer.name}</strong>`;
+
+                    html += `<div style="margin-top: 5px;">${t('bench')}: <strong>${benchPlayer ? benchPlayer.name : `Player ${set.bench}`}</strong>`;
 
                     // Show late arrival indicator for Set 1
                     if (set.number === 1 && set.arrivedLate) {
@@ -4339,15 +4389,9 @@ Click Cancel to keep your data safe`;
                             Players who already sat on the bench earlier TODAY automatically become the last option (5th choice) for subsequent sets. We strongly avoid having players bench twice in the same day.
                         </div>
                         
-                        <div style="background: #e8ecff; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #667eea;">
-                            <strong>Special Rule - Winners Who Are Behind:</strong><br>
-                            If a player WON a previous set today AND is 1+ points behind another specific player, they get priority ONLY over that specific player they're behind.<br><br>
-                            <em>Example: Player A (winner, 2.5 pts) is 1.7 points behind Player B (4.2 pts) → Player A ranks ahead of Player B specifically, but not ahead of players with fewer points.</em>
-                        </div>
-                        
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
                             <strong>Priority 1 - Weighted Points:</strong><br>
-                            Lower total points = higher priority to bench next
+                            Lower total points = higher priority to bench next. This applies to ALL players regardless of whether they won or lost previous sets - points always take priority.
                         </div>
                         
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
@@ -4373,8 +4417,8 @@ Click Cancel to keep your data safe`;
                         <p><strong>Ranking for Set 2 bench:</strong></p>
                         <ol style="line-height: 1.8;">
                             <li><strong>Player 4</strong> (1.0 pt) - Lowest points overall</li>
-                            <li><strong>Player 1</strong> (3.4 pts) - Lower than Player 3</li>
-                            <li><strong>Player 2</strong> (2.5 pts) - Winner 1.7 pts behind Player 3, gets priority over P3</li>
+                            <li><strong>Player 2</strong> (2.5 pts) - Second lowest points</li>
+                            <li><strong>Player 1</strong> (3.4 pts) - Third lowest points</li>
                             <li><strong>Player 3</strong> (4.2 pts) - Highest points</li>
                             <li><strong>Player 5</strong> (2.6 pts) - Already benched = Last option</li>
                         </ol>
@@ -4429,7 +4473,7 @@ Click Cancel to keep your data safe`;
                         <p><strong>A:</strong> Yes! Go to the <strong>Data</strong> tab and click "Export All Data" to download a JSON backup file. You can later import it using "Import Data from File".</p>
                         
                         <h4 style="margin-top: 20px;">Q: What if I switch browsers or devices?</h4>
-                        <p><strong>A:</strong> Export your data from the original browser/device and import it on the new one. Data is stored locally per browser, not in the cloud.</p>
+                        <p><strong>A:</strong> Your data is automatically synced to the cloud via Supabase. Simply open the app on any device and your data will be available. No manual export/import needed!</p>
                         
                         <h4 style="margin-top: 20px;">Q: How do I reset everything?</h4>
                         <p><strong>A:</strong> In the <strong>Data</strong> tab, use "Clear All Data" button. ⚠️ Make sure to export a backup first - this action cannot be undone!</p>
@@ -4479,15 +4523,9 @@ Click Cancel to keep your data safe`;
                             Jucătorii care au stat deja pe bancă ASTĂZI devin automat ultima opțiune (a 5-a alegere) pentru seturile următoare. Evităm puternic ca jucătorii să fie rezervă de două ori în aceeași zi.
                         </div>
                         
-                        <div style="background: #e8ecff; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #667eea;">
-                            <strong>Regulă Specială - Câștigători Care Sunt În Urmă:</strong><br>
-                            Dacă un jucător a CÂȘTIGAT un set anterior astăzi ȘI este cu 1+ puncte în urmă față de un alt jucător specific, primește prioritate DOAR față de acel jucător specific.<br><br>
-                            <em>Exemplu: Jucătorul A (câștigător, 2.5 pct) este cu 1.7 puncte în urmă față de Jucătorul B (4.2 pct) → Jucătorul A se clasează înaintea Jucătorului B în mod specific, dar nu înaintea jucătorilor cu mai puține puncte.</em>
-                        </div>
-                        
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
                             <strong>Prioritatea 1 - Puncte Ponderate:</strong><br>
-                            Puncte totale mai mici = prioritate mai mare pentru rezervă
+                            Puncte totale mai mici = prioritate mai mare pentru rezervă. Acest lucru se aplică TUTUROR jucătorilor, indiferent dacă au câștigat sau pierdut seturile anterioare - punctele au întotdeauna prioritate.
                         </div>
                         
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 15px 0;">
@@ -4513,8 +4551,8 @@ Click Cancel to keep your data safe`;
                         <p><strong>Clasament pentru rezerva Setului 2:</strong></p>
                         <ol style="line-height: 1.8;">
                             <li><strong>Jucător 4</strong> (1.0 pct) - Cele mai puține puncte în total</li>
-                            <li><strong>Jucător 1</strong> (3.4 pct) - Mai puțin decât Jucătorul 3</li>
-                            <li><strong>Jucător 2</strong> (2.5 pct) - Câștigător cu 1.7 pct în urmă față de Jucătorul 3, primește prioritate față de J3</li>
+                            <li><strong>Jucător 2</strong> (2.5 pct) - Al doilea cel mai puține puncte</li>
+                            <li><strong>Jucător 1</strong> (3.4 pct) - Al treilea cel mai puține puncte</li>
                             <li><strong>Jucător 3</strong> (4.2 pct) - Cele mai multe puncte</li>
                             <li><strong>Jucător 5</strong> (2.6 pct) - Deja rezervă = Ultima opțiune</li>
                         </ol>
@@ -4569,7 +4607,7 @@ Click Cancel to keep your data safe`;
                         <p><strong>R:</strong> Da! Mergi la tab-ul <strong>Date</strong> și apasă "Exportă Toate Datele" pentru a descărca un fișier JSON de backup. Poți ulterior să-l imporți folosind "Importă Date din Fișier".</p>
                         
                         <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă schimb browser-ul sau dispozitivul?</h4>
-                        <p><strong>R:</strong> Exportă datele din browser-ul/dispozitivul original și importă-le pe cel nou. Datele sunt stocate local per browser, nu în cloud.</p>
+                        <p><strong>R:</strong> Datele tale sunt sincronizate automat în cloud prin Supabase. Deschide pur și simplu aplicația pe orice dispozitiv și datele tale vor fi disponibile. Nu este nevoie de export/import manual!</p>
                         
                         <h4 style="margin-top: 20px;">Î: Cum resetez totul?</h4>
                         <p><strong>R:</strong> În tab-ul <strong>Date</strong>, folosește butonul "Șterge Toate Datele". ⚠️ Asigură-te că exporți un backup mai întâi - această acțiune nu poate fi anulată!</p>
