@@ -2780,6 +2780,12 @@ Are you sure you want to continue?`;
                     &nbsp;&nbsp;&nbsp;${t('set3_full')}<br>
                     &nbsp;&nbsp;&nbsp;${t('set3_two_thirds')}<br>
                     &nbsp;&nbsp;&nbsp;${t('set3_less_half')}<br>
+                    ${t('set4_points_info')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set4_full')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set4_two_thirds')}<br>
+                    &nbsp;&nbsp;&nbsp;${t('set4_less_half')}<br>
+                    <br>
+                    ${t('late_arrival_info')}<br>
                     <br>
                     ${t('points_column_info')}<br>
                     <br>
@@ -3661,8 +3667,13 @@ Click Cancel to keep your data safe`;
                 set3_full: "• Full set: 1.0 point",
                 set3_two_thirds: "• 2/3 set: 0.8 points",
                 set3_less_half: "• Less than half: 0.6 points",
+                set4_points_info: "Set 4 benches: <strong>Variable points</strong> based on duration played (optional set)",
+                set4_full: "• Full set: 1.0 point",
+                set4_two_thirds: "• 2/3 set: 0.8 points",
+                set4_less_half: "• Less than half: 0.6 points",
+                late_arrival_info: "<strong>Late Arrival:</strong> If Set 1 bench player arrives late and doesn't actually sit, mark the checkbox - they receive <strong>0 points</strong>",
                 points_column_info: "<strong>Points Column:</strong> Shows the weighted score for each player. Higher points = more benched.",
-                scoring_example: "<strong>Example:</strong> 1 Set 1 bench = 1.0 pts, 1 Set 2 bench = 1.0 pts, 1 Set 3 bench (full) = 1.0 pts",
+                scoring_example: "<strong>Example:</strong> 1 Set 1 bench = 1.0 pts, 1 Set 2 bench = 1.0 pts, 1 Set 3 bench (full) = 1.0 pts, 1 Set 4 bench (2/3) = 0.8 pts",
                 ranking_info: "<strong>Ranking:</strong> Players ranked by highest weighted score first (most benched at top)",
                 
                 // Set 3 duration
@@ -3853,8 +3864,13 @@ Click Cancel to keep your data safe`;
                 set3_full: "• Set complet: 1.0 punct",
                 set3_two_thirds: "• 2/3 set: 0.8 puncte",
                 set3_less_half: "• Mai puțin de jumătate: 0.6 puncte",
+                set4_points_info: "Rezerve Set 4: <strong>Puncte variabile</strong> bazat pe durata jucată (set opțional)",
+                set4_full: "• Set complet: 1.0 punct",
+                set4_two_thirds: "• 2/3 set: 0.8 puncte",
+                set4_less_half: "• Mai puțin de jumătate: 0.6 puncte",
+                late_arrival_info: "<strong>Întârziere:</strong> Dacă jucătorul rezervă Set 1 ajunge târziu și nu stă efectiv pe bancă, bifează caseta - primește <strong>0 puncte</strong>",
                 points_column_info: "<strong>Coloana Puncte:</strong> Arată scorul ponderat pentru fiecare jucător. Puncte mai mari = mai mult pe bancă.",
-                scoring_example: "<strong>Exemplu:</strong> 1 rezervă Set 1 = 1.0 pct, 1 rezervă Set 2 = 1.0 pct, 1 rezervă Set 3 (complet) = 1.0 pct",
+                scoring_example: "<strong>Exemplu:</strong> 1 rezervă Set 1 = 1.0 pct, 1 rezervă Set 2 = 1.0 pct, 1 rezervă Set 3 (complet) = 1.0 pct, 1 rezervă Set 4 (2/3) = 0.8 pct",
                 ranking_info: "<strong>Clasament:</strong> Jucători clasați după cel mai mare scor ponderat (cei mai mult pe bancă în top)",
                 
                 // Set 3 duration
@@ -4048,9 +4064,16 @@ Click Cancel to keep your data safe`;
                         <h4 style="margin-top: 20px;">Q: How are points calculated?</h4>
                         <p><strong>A:</strong> Players accumulate points each time they sit on the bench:</p>
                         <ul style="line-height: 1.8;">
-                            <li><strong>Set 1:</strong> 1.0 point per bench</li>
+                            <li><strong>Set 1:</strong> 1.0 point per bench (unless marked as "arrived late")</li>
                             <li><strong>Set 2:</strong> 1.0 point per bench</li>
                             <li><strong>Set 3:</strong> Variable points based on duration played:
+                                <ul style="margin-top: 5px;">
+                                    <li>Full set: 1.0 point</li>
+                                    <li>2/3 set: 0.8 points</li>
+                                    <li>Less than half: 0.6 points</li>
+                                </ul>
+                            </li>
+                            <li><strong>Set 4 (Optional):</strong> Variable points based on duration played:
                                 <ul style="margin-top: 5px;">
                                     <li>Full set: 1.0 point</li>
                                     <li>2/3 set: 0.8 points</li>
@@ -4118,20 +4141,33 @@ Click Cancel to keep your data safe`;
                     <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
                         <h3 style="color: #667eea; margin-top: 0;">⚙️ Using the App</h3>
                         
+                        <h4 style="margin-top: 20px;">Q: What if the Set 1 bench player arrives late?</h4>
+                        <p><strong>A:</strong> If the Set 1 bench player arrives late and doesn't actually sit on the bench for that set, check the "Player arrived late (no points awarded)" checkbox that appears after selecting the bench player. This ensures they receive <strong>0 points</strong> for that set, maintaining fairness in the rotation system.</p>
+
+                        <h4 style="margin-top: 20px;">Q: Can I play 4 sets instead of 3?</h4>
+                        <p><strong>A:</strong> Yes! After locking Set 2, you'll see toggle buttons to choose between 3 or 4 sets for the day. The 4th set is optional and works just like Set 3:</p>
+                        <ul style="line-height: 1.8;">
+                            <li>Select a bench player</li>
+                            <li>Build the two teams</li>
+                            <li>Play the set and select winner (optional if time limit)</li>
+                            <li>Choose duration played (Full/2/3/Less than half) for variable points</li>
+                        </ul>
+                        <p>You can switch between 3-set and 4-set modes before starting Set 3.</p>
+
                         <h4 style="margin-top: 20px;">Q: How do I start a new week?</h4>
-                        <p><strong>A:</strong> Go to the <strong>Current Week</strong> tab and click "Start New Week". The app will guide you through bench selection, team assignment, and winner selection for each of the 3 sets.</p>
+                        <p><strong>A:</strong> Go to the <strong>Current Week</strong> tab and click "Start New Week". The app will guide you through bench selection, team assignment, and winner selection for each set (3 or 4 sets depending on your choice).</p>
                         
                         <h4 style="margin-top: 20px;">Q: Can I change data after selecting a winner?</h4>
                         <p><strong>A:</strong> Yes! Click the "🗑️ Clear Set" button that appears for any set with data. You'll get a warning confirmation before clearing.</p>
                         
-                        <h4 style="margin-top: 20px;">Q: What if Set 3 ends early due to time?</h4>
-                        <p><strong>A:</strong> Before selecting the winner for Set 3, choose the duration played:
+                        <h4 style="margin-top: 20px;">Q: What if Set 3 or Set 4 ends early due to time?</h4>
+                        <p><strong>A:</strong> Before selecting the winner for Set 3 or Set 4, choose the duration played:
                             <ul style="margin-top: 5px; line-height: 1.8;">
                                 <li><strong>Full Set:</strong> Complete set played (1.0 point)</li>
                                 <li><strong>2/3 Set:</strong> About two-thirds played (0.8 points)</li>
                                 <li><strong>Less than Half:</strong> Less than half played (0.6 points)</li>
                             </ul>
-                            This ensures fair point allocation based on actual bench time.
+                            This ensures fair point allocation based on actual bench time. Both Set 3 and Set 4 support variable points and can end without a winner due to time constraints.
                         </p>
                         
                         <h4 style="margin-top: 20px;">Q: How do I view history?</h4>
@@ -4168,9 +4204,16 @@ Click Cancel to keep your data safe`;
                         <h4 style="margin-top: 20px;">Î: Cum se calculează punctele?</h4>
                         <p><strong>R:</strong> Jucătorii acumulează puncte de fiecare dată când stau pe bancă:</p>
                         <ul style="line-height: 1.8;">
-                            <li><strong>Set 1:</strong> 1.0 punct per rezervă</li>
+                            <li><strong>Set 1:</strong> 1.0 punct per rezervă (dacă nu este marcat ca "ajuns târziu")</li>
                             <li><strong>Set 2:</strong> 1.0 punct per rezervă</li>
                             <li><strong>Set 3:</strong> Puncte variabile bazate pe durata jucată:
+                                <ul style="margin-top: 5px;">
+                                    <li>Set complet: 1.0 punct</li>
+                                    <li>2/3 set: 0.8 puncte</li>
+                                    <li>Mai puțin de jumătate: 0.6 puncte</li>
+                                </ul>
+                            </li>
+                            <li><strong>Set 4 (Opțional):</strong> Puncte variabile bazate pe durata jucată:
                                 <ul style="margin-top: 5px;">
                                     <li>Set complet: 1.0 punct</li>
                                     <li>2/3 set: 0.8 puncte</li>
@@ -4238,20 +4281,33 @@ Click Cancel to keep your data safe`;
                     <div style="background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
                         <h3 style="color: #667eea; margin-top: 0;">⚙️ Folosirea Aplicației</h3>
                         
+                        <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă jucătorul rezervă Set 1 ajunge târziu?</h4>
+                        <p><strong>R:</strong> Dacă jucătorul rezervă Set 1 ajunge târziu și nu stă efectiv pe bancă pentru acel set, bifează caseta "Jucător ajuns târziu (fără puncte acordate)" care apare după selectarea jucătorului rezervă. Acest lucru asigură că primește <strong>0 puncte</strong> pentru acel set, menținând echitatea în sistemul de rotație.</p>
+
+                        <h4 style="margin-top: 20px;">Î: Pot juca 4 seturi în loc de 3?</h4>
+                        <p><strong>R:</strong> Da! După blocarea Setului 2, vei vedea butoane de comutare pentru a alege între 3 sau 4 seturi pentru ziua respectivă. Setul 4 este opțional și funcționează exact ca Setul 3:</p>
+                        <ul style="line-height: 1.8;">
+                            <li>Selectează un jucător rezervă</li>
+                            <li>Construiește cele două echipe</li>
+                            <li>Joacă setul și selectează câștigătorul (opțional dacă limită de timp)</li>
+                            <li>Alege durata jucată (Complet/2/3/Mai puțin de jumătate) pentru puncte variabile</li>
+                        </ul>
+                        <p>Poți comuta între modurile 3 seturi și 4 seturi înainte de a începe Setul 3.</p>
+
                         <h4 style="margin-top: 20px;">Î: Cum încep o săptămână nouă?</h4>
-                        <p><strong>R:</strong> Mergi la tab-ul <strong>Săptămâna Curentă</strong> și apasă "Începe Săptămână Nouă". Aplicația te va ghida prin selecția rezervei, repartizarea echipelor și selecția câștigătorului pentru fiecare dintre cele 3 seturi.</p>
+                        <p><strong>R:</strong> Mergi la tab-ul <strong>Săptămâna Curentă</strong> și apasă "Începe Săptămână Nouă". Aplicația te va ghida prin selecția rezervei, repartizarea echipelor și selecția câștigătorului pentru fiecare set (3 sau 4 seturi în funcție de alegerea ta).</p>
                         
                         <h4 style="margin-top: 20px;">Î: Pot schimba datele după selectarea câștigătorului?</h4>
                         <p><strong>R:</strong> Da! Apasă butonul "🗑️ Șterge Setul" care apare pentru orice set cu date. Vei primi o confirmare de avertizare înainte de ștergere.</p>
                         
-                        <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă Setul 3 se termină devreme din cauza timpului?</h4>
-                        <p><strong>R:</strong> Înainte de a selecta câștigătorul pentru Setul 3, alege durata jucată:
+                        <h4 style="margin-top: 20px;">Î: Ce se întâmplă dacă Setul 3 sau Setul 4 se termină devreme din cauza timpului?</h4>
+                        <p><strong>R:</strong> Înainte de a selecta câștigătorul pentru Setul 3 sau Setul 4, alege durata jucată:
                             <ul style="margin-top: 5px; line-height: 1.8;">
                                 <li><strong>Set Complet:</strong> Set complet jucat (1.0 punct)</li>
                                 <li><strong>2/3 Set:</strong> Aproximativ două treimi jucat (0.8 puncte)</li>
                                 <li><strong>Mai Puțin de Jumătate:</strong> Mai puțin de jumătate jucat (0.6 puncte)</li>
                             </ul>
-                            Acest lucru asigură alocarea corectă a punctelor bazată pe timpul efectiv pe bancă.
+                            Acest lucru asigură alocarea corectă a punctelor bazată pe timpul efectiv pe bancă. Atât Setul 3, cât și Setul 4 suportă puncte variabile și pot să se termine fără câștigător din cauza constrângerilor de timp.
                         </p>
                         
                         <h4 style="margin-top: 20px;">Î: Cum văd istoricul?</h4>
