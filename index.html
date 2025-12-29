@@ -2056,6 +2056,11 @@
                 html += `<div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
                     <label style="font-weight: 600; margin-bottom: 10px; display: block;">Number of Sets for This Week:</label>
                     <div style="display: flex; gap: 10px;">
+                        <button class="btn ${currentWeek.numberOfSets === 2 ? 'btn-primary' : 'btn-secondary'}"
+                            onclick="setNumberOfSets(2)"
+                            style="flex: 1; ${currentWeek.numberOfSets === 2 ? '' : 'opacity: 0.6;'}">
+                            2 Sets
+                        </button>
                         <button class="btn ${currentWeek.numberOfSets === 3 ? 'btn-primary' : 'btn-secondary'}"
                             onclick="setNumberOfSets(3)"
                             style="flex: 1; ${currentWeek.numberOfSets === 3 ? '' : 'opacity: 0.6;'}">
@@ -2385,12 +2390,12 @@
                 const currentWeek = await getFromStore('currentWeek', 'current');
                 if (!currentWeek) return;
 
-                // Prevent changing if Set 3 or Set 4 is already locked
-                if (currentWeek.sets[2] && currentWeek.sets[2].locked) {
-                    alert('Cannot change number of sets after Set 3 is locked!');
+                // Prevent changing if trying to reduce below locked sets
+                if (number === 2 && currentWeek.sets[2] && currentWeek.sets[2].locked) {
+                    alert('Cannot select 2 sets after Set 3 is locked!');
                     return;
                 }
-                if (currentWeek.sets[3] && currentWeek.sets[3].locked) {
+                if (number <= 3 && currentWeek.sets[3] && currentWeek.sets[3].locked) {
                     alert('Cannot change number of sets after Set 4 is locked!');
                     return;
                 }
