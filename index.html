@@ -1122,10 +1122,6 @@
                 <span class="tab-icon">◉</span>
                 <span class="tab-text" data-translate="tab_week">Current Week</span>
             </button>
-            <button class="nav-tab" data-tab="faq">
-                <span class="tab-icon">?</span>
-                <span class="tab-text" data-translate="tab_faq">FAQ</span>
-            </button>
             <button class="nav-tab" data-tab="history">
                 <span class="tab-icon">☰</span>
                 <span class="tab-text" data-translate="tab_history">History</span>
@@ -1134,7 +1130,11 @@
                 <span class="tab-icon">⚙</span>
                 <span class="tab-text" data-translate="tab_setup">Setup</span>
             </button>
-            <button class="nav-tab" data-tab="manual">
+            <button class="nav-tab" data-tab="faq">
+                <span class="tab-icon">?</span>
+                <span class="tab-text" data-translate="tab_faq">FAQ</span>
+            </button>
+            <button class="nav-tab" data-tab="manual" style="display: none;">
                 <span class="tab-icon">✎</span>
                 <span class="tab-text" data-translate="tab_manual">Historical Data</span>
             </button>
@@ -1665,6 +1665,7 @@
                     <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                         <label style="font-weight: 600; margin-bottom: 10px; display: block;">Number of Sets:</label>
                         <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" id="manualSets2Btn" onclick="setManualNumberOfSets(2)" style="opacity: 0.6;">2 Sets</button>
                             <button class="btn btn-primary" id="manualSets3Btn" onclick="setManualNumberOfSets(3)">3 Sets</button>
                             <button class="btn btn-secondary" id="manualSets4Btn" onclick="setManualNumberOfSets(4)" style="opacity: 0.6;">4 Sets</button>
                         </div>
@@ -3175,36 +3176,45 @@ Are you sure you want to continue?`;
 
         function setManualNumberOfSets(number) {
             manualWeekData.numberOfSets = number;
+            const set3Card = document.getElementById('manualSetCard3');
             const set4Card = document.getElementById('manualSetCard4');
+            const btn2 = document.getElementById('manualSets2Btn');
             const btn3 = document.getElementById('manualSets3Btn');
             const btn4 = document.getElementById('manualSets4Btn');
 
-            if (number === 4) {
-                if (set4Card) set4Card.style.display = '';
-                if (btn4) {
-                    btn4.classList.remove('btn-secondary');
-                    btn4.classList.add('btn-primary');
-                    btn4.style.opacity = '1';
+            // Reset all buttons to secondary
+            [btn2, btn3, btn4].forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-secondary');
+                    btn.style.opacity = '0.6';
                 }
-                if (btn3) {
-                    btn3.classList.remove('btn-primary');
-                    btn3.classList.add('btn-secondary');
-                    btn3.style.opacity = '0.6';
-                }
-            } else {
+            });
+
+            // Set active button
+            if (number === 2 && btn2) {
+                btn2.classList.remove('btn-secondary');
+                btn2.classList.add('btn-primary');
+                btn2.style.opacity = '1';
+                if (set3Card) set3Card.style.display = 'none';
                 if (set4Card) set4Card.style.display = 'none';
-                if (btn3) {
-                    btn3.classList.remove('btn-secondary');
-                    btn3.classList.add('btn-primary');
-                    btn3.style.opacity = '1';
-                }
-                if (btn4) {
-                    btn4.classList.remove('btn-primary');
-                    btn4.classList.add('btn-secondary');
-                    btn4.style.opacity = '0.6';
-                }
-                // Clear Set 4 data when switching to 3 sets
+                // Clear Set 3 and 4 data
+                manualWeekData.set3 = { bench: null, team1: null, team2: null, winners: null };
                 manualWeekData.set4 = { bench: null, team1: null, team2: null, winners: null };
+            } else if (number === 3 && btn3) {
+                btn3.classList.remove('btn-secondary');
+                btn3.classList.add('btn-primary');
+                btn3.style.opacity = '1';
+                if (set3Card) set3Card.style.display = '';
+                if (set4Card) set4Card.style.display = 'none';
+                // Clear Set 4 data
+                manualWeekData.set4 = { bench: null, team1: null, team2: null, winners: null };
+            } else if (number === 4 && btn4) {
+                btn4.classList.remove('btn-secondary');
+                btn4.classList.add('btn-primary');
+                btn4.style.opacity = '1';
+                if (set3Card) set3Card.style.display = '';
+                if (set4Card) set4Card.style.display = '';
             }
         }
 
