@@ -1255,7 +1255,40 @@
 
         // Set this to true once you've added your Supabase credentials above
         const SUPABASE_ENABLED = true; // Change to true after adding credentials
-        
+
+        // ==============================================
+        // ADMIN PASSWORD PROTECTION
+        // ==============================================
+        // Set your admin password here (change this to your own password!)
+        const ADMIN_PASSWORD = 'admin132'; // Change this to a secure password
+
+        // Check if user is authenticated as admin (valid for 1 hour)
+        function isAdmin() {
+            const authTime = localStorage.getItem('adminAuthTime');
+            if (!authTime) return false;
+            const timeDiff = Date.now() - parseInt(authTime);
+            const oneHour = 60 * 60 * 1000;
+            return timeDiff < oneHour;
+        }
+
+        // Prompt for admin password
+        function requestAdminPassword() {
+            const password = prompt('Admin password required:');
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('adminAuthTime', Date.now().toString());
+                return true;
+            }
+            alert('Incorrect password!');
+            return false;
+        }
+
+        // Wrapper function for admin-only actions
+        function requireAdmin(action) {
+            if (isAdmin() || requestAdminPassword()) {
+                action();
+            }
+        }
+
         // ==============================================
         // SUPABASE CLIENT (Simple fetch-based)
         // ==============================================
@@ -1797,18 +1830,20 @@
         }
 
         function toggleEditPlayers() {
-            // Store original values
-            originalPlayerValues = [];
-            for (let i = 1; i <= 5; i++) {
-                const input = document.getElementById(`player${i}`);
-                originalPlayerValues.push(input.value);
-                input.disabled = false;
-            }
+            requireAdmin(() => {
+                // Store original values
+                originalPlayerValues = [];
+                for (let i = 1; i <= 5; i++) {
+                    const input = document.getElementById(`player${i}`);
+                    originalPlayerValues.push(input.value);
+                    input.disabled = false;
+                }
 
-            // Toggle buttons
-            document.getElementById('editPlayersBtn').style.display = 'none';
-            document.getElementById('savePlayersBtn').style.display = 'inline-block';
-            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+                // Toggle buttons
+                document.getElementById('editPlayersBtn').style.display = 'none';
+                document.getElementById('savePlayersBtn').style.display = 'inline-block';
+                document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            });
         }
 
         function cancelEditPlayers() {
@@ -3081,8 +3116,13 @@ Are you sure you want to continue?`;
 
         // Delete a specific week from history
         async function deleteWeek(weekNumber) {
+            // Check admin password first
+            if (!isAdmin() && !requestAdminPassword()) {
+                return;
+            }
+
             const confirmed = confirm(`Are you sure you want to delete Week ${weekNumber}?\n\nThis will permanently remove all data for this week, including:\n- Bench assignments\n- Team compositions\n- Match results\n\nThis action cannot be undone.`);
-            
+
             if (!confirmed) {
                 return;
             }
@@ -3649,16 +3689,22 @@ Are you sure you want to continue?`;
         async function importData(event) {
             console.log('Import data triggered');
             const file = event.target.files[0];
-            
+
             if (!file) {
                 console.log('No file selected');
+                return;
+            }
+
+            // Check admin password first
+            if (!isAdmin() && !requestAdminPassword()) {
+                event.target.value = ''; // Clear the file input
                 return;
             }
 
             console.log('File selected:', file.name, 'Size:', file.size, 'bytes');
 
             // Show loading message
-            document.getElementById('dataStatus').innerHTML = 
+            document.getElementById('dataStatus').innerHTML =
                 '<div class="status-info">⏳ Importing data, please wait...</div>';
 
             const reader = new FileReader();
@@ -3749,6 +3795,11 @@ Are you sure you want to continue?`;
         }
 
         async function clearAllData() {
+            // Check admin password first
+            if (!isAdmin() && !requestAdminPassword()) {
+                return;
+            }
+
             // First confirmation - explain what will be deleted
             const firstMessage = `This will PERMANENTLY DELETE:
 
