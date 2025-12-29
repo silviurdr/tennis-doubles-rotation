@@ -1773,7 +1773,7 @@
                         ${t('export_data_json')}
                     </button>
                     
-                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
+                    <button class="btn btn-primary" onclick="requestImportData()">
                         ${t('import_data_json')}
                     </button>
                     <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="display: none;">
@@ -3686,18 +3686,23 @@ Are you sure you want to continue?`;
             }
         }
 
+        // Request password BEFORE opening file dialog
+        function requestImportData() {
+            // Check admin password first
+            if (!isAdmin() && !requestAdminPassword()) {
+                return; // Password check failed, don't open file dialog
+            }
+
+            // Password correct, open file selection dialog
+            document.getElementById('importFile').click();
+        }
+
         async function importData(event) {
             console.log('Import data triggered');
             const file = event.target.files[0];
 
             if (!file) {
                 console.log('No file selected');
-                return;
-            }
-
-            // Check admin password first
-            if (!isAdmin() && !requestAdminPassword()) {
-                event.target.value = ''; // Clear the file input
                 return;
             }
 
