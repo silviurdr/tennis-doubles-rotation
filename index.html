@@ -4318,7 +4318,9 @@ Click Cancel to keep your data safe`;
             // Refresh dynamic content if currently visible
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab) {
-                if (activeTab.id === 'history') {
+                if (activeTab.id === 'stats') {
+                    displayStats();
+                } else if (activeTab.id === 'history') {
                     displayHistory();
                 } else if (activeTab.id === 'setup') {
                     generateSetup();
@@ -4326,6 +4328,8 @@ Click Cancel to keep your data safe`;
                     generateManualEntry();
                 } else if (activeTab.id === 'data') {
                     generateDataManagement();
+                } else if (activeTab.id === 'week') {
+                    displayCurrentWeek();
                 }
             }
             
